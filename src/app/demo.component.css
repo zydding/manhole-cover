@@ -45,7 +45,8 @@ body{
 	overflow: hidden;
 	border-right: 1px solid #c0c0c0;
 }
-.top-r .lines .codelines .lineno{
+
+.lineno{
 	color: #AAAAAA;
     padding-right: 0.5em;
     padding-top: 0.0em;
@@ -64,6 +65,9 @@ body{
 .head{
 	height: 50px;
 }
+.head-btn{
+	vertical-align:top;
+}
 
 .btn{
 	width:120px;
@@ -71,13 +75,13 @@ body{
 	font-size: 16px;
 	background-color: #fff;
 	display: inline-block;
-	line-height: 45px;
+	line-height: 40px;
 	text-align: center;
 	cursor:pointer;
 	outline: 0;
 }
 .current-btn{
-	background-color: #009688;
-	color: #fff;
-	border: 1px solid #009688;
+	background-color: #DCDCDC;
+	color: #555;
+	border: 1px solid #DCDCDC;
 }
