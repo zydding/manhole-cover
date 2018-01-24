@@ -1,20 +1,44 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to {{ title }}!
-  </h1>
-  <img width="300" alt="Angular Logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==">
+<div class="top auto m20">
+  <div class="top-l l">
+      <strong class="">请在此粘贴数据：</strong>
+  </div>
+  <div class="top-r l">
+      <div class="top-r-border border">
+          <textarea #box (keyup)="contentChange(box,lines)" style=" resize: none; width: 93%; height: 300px; border: 0;" class="" id="origin" autofocus="autofocus" spellcheck="false"></textarea>
+          <div class="lines l" style="width: 5%; max-width: 100px;height: 300px;">
+              <div #lines class="codelines">
+                  <div *ngFor="let item of heroes;let i=index" class="lineno">{{i+1}}</div>
+                  <!-- <div class="lineno">1</div>
+                  <div class="lineno">2</div>
+                  <div class="lineno">3</div>
+                  <div class="lineno">4</div>
+                  <div class="lineno">5</div>
+                  <div class="lineno">6</div>
+                  <div class="lineno">7</div>
+                  <div class="lineno">8</div>
+                  <div class="lineno">9</div>
+                  <div class="lineno">10</div>
+                  <div class="lineno">11</div>
+                  <div class="lineno">12</div>
+                  <div class="lineno">13</div>
+                  <div class="lineno">14</div>
+                  <div class="lineno">15</div> -->
+              </div>
+          </div>
+      </div>
+  </div>
 </div>
-<h2>Here are some links to help you start: </h2>
-<ul>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/tutorial">Tour of Heroes</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://github.com/angular/angular-cli/wiki">CLI Documentation</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://blog.angular.io/">Angular blog</a></h2>
-  </li>
-</ul>
-
+<div class="head m20 auto">
+  <div class="top-l l" style="height: 50px;">
+      
+  </div>
+  <div class="top-r l head-btn">
+      <button mat-button class="btn current-btn border" (click)="getList(box.value)" id="btn_list">获取关联列表</button>
+      <button mat-button class="btn border">批量修改</button>
+      <button mat-button class="btn border">保存</button>
+  </div>
+  
+</div>
+<div class="foot m20 auto">
+  {{values}}
+</div>

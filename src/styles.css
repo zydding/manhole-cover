@@ -1,1 +1,13 @@
 /* You can add global styles to this file, and also import other style files */
+.l{
+	float: left;
+}
+.r{
+	float:right;
+}
+.auto{
+	margin: 0 auto;
+}
+.m20{
+	margin-top: 20px;
+}

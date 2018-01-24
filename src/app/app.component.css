@@ -1,0 +1,77 @@
+body{
+	background-color: #fff;
+}
+*{
+	font-family: "Microsoft YaHei", 微软雅黑, MicrosoftJhengHei, 华文细黑, STHeiti, MingLiu;
+}
+
+.top{
+	height: 320px;
+}
+.top-l{
+	width: 20%;
+	text-align: right;
+}
+.top-l strong{
+	font-size: 20px;
+}
+.border{
+	border: 1px solid #c0c0c0;
+}
+.font-c{
+	color: #555;
+}
+.top-r{
+	width: 60%;
+}
+.top-r-border{
+	width: 100%;
+	border: 1px solid #c0c0c0;
+	height: 305px;
+}
+.top-r .lines{
+	margin: 3px 0 0 0;
+	overflow: hidden;
+	border-right: 1px solid #c0c0c0;
+}
+
+.lineno{
+	color: #AAAAAA;
+    padding-right: 0.5em;
+    padding-top: 0.0em;
+    text-align: right;
+    white-space: nowrap;
+    font-size: 15px !important;
+    font-family: monospace !important;
+    line-height: normal !important;
+    height: 20px !important;
+}
+.top-r textarea{
+	outline: none;
+	line-height: 20px;
+	padding: 0;
+	margin: 0;
+}
+
+.head{
+	height: 50px;
+}
+.head-btn{
+	vertical-align:top;
+}
+
+.btn{
+	width:120px;
+	height: 45px;
+	font-size: 16px;
+	color: #555555;
+	line-height: 45px;
+	padding: 0;
+	text-align: center;
+	cursor:pointer;
+	
+}
+.current-btn{
+	background-color: #DCDCDC;
+	border: 1px solid #DCDCDC;
+}
