@@ -5,6 +5,8 @@ import { MatButtonModule } from "@angular/material";
 import { HttpModule } from "@angular/http";
 
 import { AppComponent } from './app.component';
+import { RestApiService } from "./services/rest-api.service";
+import { CookieService } from "ng2-cookies";
 
 @NgModule({
   declarations: [
@@ -16,7 +18,7 @@ import { AppComponent } from './app.component';
     MatButtonModule,
     HttpModule,
   ],
-  providers: [],
+  providers: [RestApiService,CookieService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

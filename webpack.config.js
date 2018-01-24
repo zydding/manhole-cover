@@ -437,9 +437,9 @@ module.exports = {
     },
     "devServer": {
         proxy: {
-            '/batch-info': {
+            '/api': {
                 target: 'http://api-dev.renjinggai.com',
-                //pathRewrite: { '^/batch-info': '' },//上面已经加了/batch-info
+                pathRewrite: { '^/api': '' },//上面已经加了batch-info
                 changeOrigin: true
             }
         },
