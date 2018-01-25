@@ -6,7 +6,7 @@ body{
 }
 
 .top{
-	height: 320px;
+	height: 220px;
 }
 .top-l{
 	width: 20%;
@@ -27,7 +27,7 @@ body{
 .top-r-border{
 	width: 100%;
 	border: 1px solid #c0c0c0;
-	height: 305px;
+	height: 205px;
 }
 .top-r .lines{
 	margin: 3px 0 0 0;
@@ -49,7 +49,7 @@ body{
 .top-r textarea{
 	outline: none;
 	line-height: 20px;
-	padding: 0;
+	padding: 3px 0 0 3px;
 	margin: 0;
 }
 

@@ -8,10 +8,10 @@ import { Template } from '../interfaces/template';
 
 @Injectable()
 export class RestApiService {
-  static host='/api';
+  static host='/api';//这里加了api，需要在webpack上面替换为空
   private isLogin=false;
   private csrfToken:string;
-  private _loginStateSource=new Subject();
+  private _loginStateSource=new Subject();//subject是Rxjs特殊的observable对象，可共享一个执行环境
   LoginState$=this._loginStateSource.asObservable();//asObservable用来接收Subject的每次更新
 
   constructor(private http:Http) { }
@@ -31,14 +31,14 @@ export class RestApiService {
    * @param redirect 下一页面
    */
   doOauthLogin(redirect:string):void{
-    const url=RestApiService.host+'/api-oauth-login/?next='+redirect;//const常数不能被更新
+    const url=RestApiService.host+'/api-auth/login/?next='+redirect;//const常数不能被更新
     window.location.href=url;
   }
   /**
    * 退出
    */
   doLoginOut():void{
-    const url=RestApiService.host+'/api-oauth-logout/';
+    const url=RestApiService.host+'/api-oauth/logout/';
     console.log('退出地址:'+url);
     this.http.get(url)
     .toPromise().then(response=>{
@@ -71,8 +71,10 @@ export class RestApiService {
       this._loginStateSource.next(true);
     }).catch(err=>{
       if(err.status===403){
-        this._loginStateSource.next(false);        
+        this._loginStateSource.next(false);
       }
+      //失败跳转登录页面
+      this.doOauthLogin('/batch-info/');
     })
   }
   /**

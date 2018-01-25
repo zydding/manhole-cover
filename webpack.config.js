@@ -436,6 +436,7 @@ module.exports = {
         "setImmediate": false
     },
     "devServer": {
+        // contentBase："./" // 本地服务器在哪个目录搭建页面，一般我们在当前目录即可；
         proxy: {
             '/api': {
                 target: 'http://api-dev.renjinggai.com',
@@ -443,9 +444,11 @@ module.exports = {
                 changeOrigin: true
             }
         },
-        publicPath: '/',
+        publicPath: '/',//打包后js。css文件的目录
         historyApiFallback: {
             index: '/'
         }
+        //historyApiFallback 当我们搭建spa应用时非常有用，它使用的是HTML5 History Api，任意的跳转或404响应可以指向 index.html 页面
+        //hot Module ReplaceMent 热模块替换，用于页面无刷新加载
     }
 };
