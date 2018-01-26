@@ -14,6 +14,8 @@ import { Template } from './interfaces/template';
 export class AppComponent implements OnInit,OnDestroy {
   login_state:Subscription;//Subscription可以调用unsubscribe方法，销毁Observable可观察对象
   heroes=[];
+  box3='';
+  flag:boolean;
   constructor(private restApi:RestApiService) {
     //初始化行号
     for(var j=0;j<15;j++){
@@ -30,7 +32,7 @@ export class AppComponent implements OnInit,OnDestroy {
    * 页面初始化
    */
   ngOnInit():void{
-    
+    this.flag=false;
   }
   /**
    * keyUp 事件
@@ -86,18 +88,51 @@ export class AppComponent implements OnInit,OnDestroy {
    * 处理BoxValue的格式
    */
   dealArray(boxValue:string):any[]{
-    //substring提取指定索引中的字符
-    //split分割字符
-    //
-    
-    boxValue
-
+    console.log('字符总长度：'+boxValue.length);
+    var patter1=/EC2-\d{12}/g;//匹配EC2
+    var patter2=/CL\d{12}/g;//匹配CL
+    var flag_EC2=patter1.exec(boxValue);
+    var flag_CL=patter2.exec(boxValue);
+    var result='';
+    var a=[];
+    var arr1,arr2;
+    while((arr1=patter1.exec(boxValue))!=null){
+      a.push(arr1);
+      result=boxValue.replace(new RegExp(arr1,'g'),'');
+    }
+    console.log('结果1为:'+result+'长度为：'+result.length);
+    while((arr2=patter2.exec(result))!=null){
+      a.push(arr2);
+      result=result.replace(new RegExp(arr2,'g'),'');
+    }
+    console.log('结果2为:'+result+'长度为：'+result.length);
+    result=result.replace(/\D/,'');//去除非数字
+    var resultEnd='';
+    for(var k=0;k<Math.floor(result.length/12);k++){
+      if(result.length>=12){
+        a.push(result.substring(0,12));
+        result=result.replace(new RegExp(result.substring(0,12),'g'),'');
+      }
+    }
+    console.log('结果3为:'+a.toString()+'长度为：'+a.length);
     return null;
+  }
+  /**
+   * 测试
+   */
+  test(){
+    var name = 'aaa hhh ccc';
+    //\w+表示匹配字母，数字或者下划线，，\b表示必须出现在开头或者结尾
+    var ss=name.replace(/\b\w+\b/g,function(word){
+      return word.substring(0,1).toUpperCase()+word.substring(1);
+    });
+    
+    console.log("javascript".replace(/java/,"$&$' is "));
+    console.log(ss);
   }
   /**
    * 生成序列
    */
-  box3='';
   runSeq(x1,x2,x3,num){
     var b=[x1,x2,x3];
     var a=[];
@@ -105,6 +140,10 @@ export class AppComponent implements OnInit,OnDestroy {
       var x=Math.ceil(Math.random()*3);//向上取整
       a.push(b[x-1]);
     }
-    this.box3=a.toString();
+    //debugger;
+    this.box3=a.toString().replace(/,/g,'');
+    if(this.box3.length>0){
+      this.flag=true;
+    }
   }
 }

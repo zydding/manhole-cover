@@ -36,7 +36,9 @@
       <button mat-button class="btn current-btn border" (click)="getList(box.value)" id="btn_list">获取关联列表</button>
       <button mat-button class="btn border">批量修改</button>
       <button mat-button class="btn border">保存</button>
-      <button mat-button (click)='runSeq(input1.value,input2.value,input3.value,input4.value)' class="btn border">生成</button>
+      <button mat-button (click)="runSeq(input1.value,input2.value,input3.value,input4.value)" class="btn border">生成</button>
+      <button mat-button *ngIf="flag" (click)="dealArray(box2.value)" class="btn border">处理</button>
+      <button mat-button (click)="test()" class="btn border">测试</button>
   </div>
   
 </div>
