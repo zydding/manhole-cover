@@ -1,73 +1,75 @@
-<div class="top auto m20">
-    <div class="top-l l">
-        <strong class="">请在此粘贴数据：</strong>
-    </div>
-    <div class="top-r l">
-        <div class="top-r-border border">
-            <textarea #box (scroll)="scrollEvent(box,lines)" (keyup)="contentChange(box,lines)" style=" resize: none; width: 93%; height: 200px; border: 0;" class="" id="origin" autofocus="autofocus" spellcheck="false"></textarea>
-            <div class="lines l" style="width: 5%; max-width: 100px;height: 200px;">
-                <div #lines class="codelines">
-                    <div *ngFor="let item of heroes;let i=index" class="lineno">{{i+1}}</div>
-                    
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="head m20 auto">
-    <div class="top-l l" style="height: 50px;">
+ <div class="all" >
+    <div class="info auto">
+        <div class="l">用户：
         
+        <span class="logout r">退出</span>
+        <span class="username r">bob</span>
     </div>
-    <div class="top-r l head-btn">
-        <input #input1 value="EC2-201509010008" type="text" placeholder="输入值1">
-        <input #input2 value="CL201707130000" type="text" placeholder="输入值2">
-        <input #input3 value="201507291659" type="text" placeholder="输入值3">
-        <input #input4 value="10" type="text" placeholder="输入生成个数">
     </div>
-    
-  </div>
 
-<div class="head m20 auto">
-  <div class="top-l l" style="height: 50px;">
-      
-  </div>
-  <div class="top-r l head-btn">
-      <button mat-button class="btn current-btn border" (click)="getList(box.value)" id="btn_list">获取关联列表</button>
-      <button mat-button class="btn border">批量修改</button>
-      <button mat-button class="btn border">保存</button>
-      <button mat-button (click)="runSeq(input1.value,input2.value,input3.value,input4.value)" class="btn border">生成</button>
-      <button mat-button *ngIf="flag" (click)="dealArray(box2.value)" class="btn border">处理</button>
-      <button mat-button (click)="test()" class="btn border">测试</button>
-  </div>
-  
-</div>
-<div class="top auto m20">
-    <div class="top-l l">
-        <strong class="">生成数据：</strong>
-    </div>
-    <div class="top-r l">
-        <div class="top-r-border border">
-            <textarea #box2 style=" resize: none; width: 93%; height: 200px; border: 0;" class="" id="origin2" spellcheck="false">{{box3}}</textarea>
-            <div class="lines l" style="width: 5%; max-width: 100px;height: 200px;">
-                <div #lines2 class="codelines">
-                    <div class="lineno">1</div>
-                    <div class="lineno">2</div>
-                    <div class="lineno">3</div>
-                    <div class="lineno">4</div>
-                    <div class="lineno">5</div>
-                    <div class="lineno">6</div>
-                    <div class="lineno">7</div>
-                    <div class="lineno">8</div>
-                    <div class="lineno">9</div>
-                    <div class="lineno">10</div>
-                    <div class="lineno">11</div>
-                    <div class="lineno">12</div>
-                    <div class="lineno">13</div>
-                    <div class="lineno">14</div>
-                    <div class="lineno">15</div>
-                </div>
+    <div class="top auto m30">
+        <div class="top-l l">
+            <strong class="">输入序列号：</strong>
+        </div>
+        <div class="top-r l">
+            <div class="top-r-border border">
+                <textarea #box style=" resize: none;" class="" id="origin" autofocus="autofocus" spellcheck="false"></textarea>
             </div>
         </div>
+        <div class="top-r2 l">
+            <button mat-button class="btn back-c1" (click)="getList(box.value)" id="btn_list">批量修改</button>
+            <button mat-button class="btn back-c2 btn-margin">保存</button>
+            <button mat-button class="btn back-c3 btn-margin">删除</button>
+        </div>
     </div>
-  </div>
+    <div class="auto m20 foot">
+        <table border="0">
+            <tbody>
+                <tr style="border-bottom-style:solid;">
+                    <th width="8%"><input type="checkbox" class="list-checkbox">选择</th>
+                    <th width="12%">序列号</th>
+                    <th>批次</th>
+                    <th width="8%">发货日期</th>
+                    <th width="18%">收货方</th>
+                    <th width="8%">状态</th>
+                    <th>备注</th>
+                    <th colspan="2" width="10%">操作</th>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" class="list-checkbox"></td>
+                    <td>EC2-208039220023</td>
+                    <td>A1-1</td>
+                    <td>2018-02-23</td>
+                    <td>1234科技公司</td>
+                    <td >保持关联</td>
+                    <td>添加备注信息</td>
+                    <td class="merge-c"><a>修改</a></td>
+                    <td class="del-c"><a>移除</a></td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" class="list-checkbox"></td>
+                    <td>EC2-208039220023</td>
+                    <td>A1-1</td>
+                    <td>2018-02-23</td>
+                    <td>1234科技公司</td>
+                    <td>保持关联</td>
+                    <td>添加备注信息</td>
+                    <td class="merge-c"><a>修改</a></td>
+                    <td class="del-c"><a>移除</a></td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" class="list-checkbox"></td>
+                    <td>EC2-208039220023</td>
+                    <td>A1-1</td>
+                    <td>2018-02-23</td>
+                    <td>1234科技公司</td>
+                    <td>保持关联</td>
+                    <td>添加备注信息</td>
+                    <td class="merge-c"><a>修改</a></td>
+                    <td class="del-c"><a>移除</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <app-dialog></app-dialog>
+</div>

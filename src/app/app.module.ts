@@ -7,10 +7,12 @@ import { HttpModule } from "@angular/http";
 import { AppComponent } from './app.component';
 import { RestApiService } from "./services/rest-api.service";
 import { CookieService } from "ng2-cookies";
+import { DialogComponent } from './components/dialog/dialog.component';
 
 @NgModule({
   declarations: [
     AppComponent,
+    DialogComponent,
   ],
   imports: [
     BrowserModule,

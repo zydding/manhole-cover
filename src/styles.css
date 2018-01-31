@@ -1,6 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
 
-
+body{
+	background-color: #fff;
+	margin: 0;
+	padding: 0;
+}
 .l{
 	float: left;
 }
@@ -12,4 +16,14 @@
 }
 .m20{
 	margin-top: 20px;
+}
+.m30{
+	margin-top: 30px;
+}
+
+a{
+	text-decoration: none;	
+}
+a:hover{
+	text-decoration: underline;
 }
