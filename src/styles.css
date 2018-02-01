@@ -5,11 +5,20 @@ body{
 	margin: 0;
 	padding: 0;
 }
+i{
+	overflow: hidden;
+}
 .l{
 	float: left;
 }
 .r{
 	float:right;
+}
+.tx-r{
+	text-align: right;
+}
+.tx-l{
+	text-align: left;
 }
 .auto{
 	margin: 0 auto;

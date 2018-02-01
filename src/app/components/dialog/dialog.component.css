@@ -1,0 +1,106 @@
+.dia{
+    width: 600px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.dia-head{
+    background-color: #7ecef4;
+    text-align: center;
+    height:45px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #0e80d8;
+    position: relative;
+    line-height: 45px;
+}
+
+.dia-head i{
+    position: absolute;
+    top: 10px;
+    left: 210px;
+    border-radius: 30px;
+    width: 26px;
+    height: 24px;
+    opacity: 0.8;
+}
+
+.dia .dia-body table tbody tr{
+    height: 35px;
+    
+}
+
+
+.dia .dia-body table tbody tr td{
+    vertical-align: bottom;
+    padding: 5px 0 5px 0;
+    line-height:32px;
+}
+.td-div-border{
+    font-size:15px;
+    border: 1px #dcdcdc solid;
+    outline: #dcdcdc;
+    position:relative;
+    margin-top: 6px;
+    height: 28px;
+    width:220px;
+}
+
+.dia .dia-body table tbody tr td i{
+    height: 9px;
+    width: 24px;
+    position: absolute;
+    top:10px;
+    right: 4px;
+    opacity:0.6;
+}
+.dia .dia-body table tbody tr td div input{
+    border: 0;
+    outline: 0;
+    vertical-align: top;
+    height: 26px;
+    width: 78%;
+}
+
+.dia .dia-body table tbody tr td textarea{
+    outline: 0;
+    line-height: 18px;
+    font-size: 15px;
+    margin-top: 10px;
+}
+
+
+
+.no-border{
+    border: 0;
+    outline: 0;
+    vertical-align: top;
+}
+.dia-btn-img1{
+    height: 40px;
+}
+
+.dia-btn{
+    padding-left: 200px;
+}
+
+.btn{
+    float: left;
+	width:60px;
+	height: 35px;
+	font-size: 15px;
+	color: #000;
+	line-height: 35px;
+	padding: 0;
+	text-align: center;
+	cursor:pointer;
+	border-radius: 3px;
+    font-weight: 500;
+}
+.btn-Confirm{
+    margin-right: 20px;
+    background-color:#89c997;
+}
+/* 20+60*2+X=600 */
+.btn-Cancel{
+    background-color:#f6b37f;
+}

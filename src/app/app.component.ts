@@ -1,7 +1,9 @@
-import { OnDestroy,OnInit, Component,Directive,ElementRef,HostListener,Input } from '@angular/core';
+import { OnDestroy,OnInit, Component,Directive,ElementRef,HostListener,Input, Inject } from '@angular/core';
 import { RestApiService } from './services/rest-api.service'
 import { Subscription } from 'rxjs/Subscription';
 import { Template } from './interfaces/template';
+import { MatDialog } from '@angular/material';
+import { DialogComponent } from './components/dialog/dialog.component';
 
 
 
@@ -14,11 +16,14 @@ import { Template } from './interfaces/template';
 export class AppComponent implements OnInit,OnDestroy {
   login_state:Subscription;//Subscription可以调用unsubscribe方法，销毁Observable可观察对象
   heroes=[];//用来存页面行号的列表
-  box3='';
   flag:boolean;
   boxValue='';
   keyUpTime;
-  constructor(private restApi:RestApiService) {
+  name='zengyi';
+  animal='大象';
+  constructor(private restApi:RestApiService,
+    public dialog : MatDialog,
+  private dialogComponent:DialogComponent) {
   }
   /**
    * 页面销毁？
@@ -31,6 +36,21 @@ export class AppComponent implements OnInit,OnDestroy {
    */
   ngOnInit():void{
     this.flag=false;
+  }
+  /**
+   * 打开弹出框
+   */
+  OpenDialog():void{
+    var that=this;
+    let dialogRef=this.dialog.open(DialogComponent,{
+      width:'600px',
+      data:{name:that.name,animal:that.animal}
+    });
+
+    dialogRef.afterClosed().subscribe(result=>{
+      console.log('close');
+      this.animal=result;
+    })
   }
   /**
    * 通过输入框的值获取服务器的数据
@@ -85,4 +105,6 @@ export class AppComponent implements OnInit,OnDestroy {
     // }
     // this.keyUpTime = curTime;
   }
+  
 }
+
