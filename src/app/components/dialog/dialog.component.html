@@ -57,13 +57,13 @@
             </tbody>
         </table>
         <div class="dia-btn">
-            <button mat-button class="btn btn-Confirm">确定</button>
-            <button mat-button class="btn btn-Cancel" (click)="onNoClick(result)">取消</button>
+            <button mat-button [mat-dialog-close] class="btn btn-Confirm">确定</button>
+            <button mat-button class="btn btn-Cancel" [mat-dialog-close] (click)="onNoClick(result)">取消</button>
 
             <!-- <div class="dia-btn-img1" style="background:url('assets/images/icon.jpg') no-repeat 0 -30px;"><span>确定</span></div> -->
         </div>
     </div>
 </div>
-<div id="JS_mask" class="c-mask" style=" display:none; height: 884px; width: 100%; position: absolute; top: 0px; left: 0px; opacity: 0.5; z-index: 299; background: rgb(0, 0, 0);"></div>
+<!-- <div id="JS_mask" class="c-mask" style=" display:none; height: 884px; width: 100%; position: absolute; top: 0px; left: 0px; opacity: 0.5; z-index: 299; background: rgb(0, 0, 0);"></div> -->
 
 

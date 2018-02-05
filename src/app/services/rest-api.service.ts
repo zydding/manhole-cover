@@ -2,9 +2,8 @@ import { Injectable } from '@angular/core';
 import { Http,Headers } from "@angular/http";
 import { Subject } from 'rxjs/Subject';
 import { Cookie } from "ng2-cookies";
-
-
 import { Template } from '../interfaces/template';
+import { TemplateData } from "./mock-template";
 
 @Injectable()
 export class RestApiService {
@@ -91,4 +90,9 @@ export class RestApiService {
       return Promise.reject(err);
     });
   }
+  getStaticList():Promise<Template[]>{
+    return Promise.resolve(TemplateData);
+    //return TemplateData;
+  }
+  
 }

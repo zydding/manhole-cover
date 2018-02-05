@@ -35,7 +35,18 @@
                     <th>备注</th>
                     <th colspan="2" width="10%">操作</th>
                 </tr>
-                <tr>
+                <tr *ngFor="let item of staticList;let i=index">
+                    <td><input type="checkbox" class="list-checkbox"></td>
+                    <td>{{item.serialNo}}</td>
+                    <td>{{item.batchNo}}</td>
+                    <td>{{item.delivery_date|date:"yyyy-MM-dd"}}</td>
+                    <td>{{item.receiving_party}}</td>
+                    <td >{{item.status}}</td>
+                    <td>{{item.remark}}</td>
+                    <td class="merge-c" (click)="merge(item)"><a>修改</a></td>
+                    <td class="del-c" (click)="remove(item)"><a>移除</a></td>
+                </tr>
+                <!-- <tr>
                     <td><input type="checkbox" class="list-checkbox"></td>
                     <td>EC2-208039220023</td>
                     <td>A1-1</td>
@@ -45,31 +56,9 @@
                     <td>添加备注信息</td>
                     <td class="merge-c"><a>修改</a></td>
                     <td class="del-c"><a>移除</a></td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox" class="list-checkbox"></td>
-                    <td>EC2-208039220023</td>
-                    <td>A1-1</td>
-                    <td>2018-02-23</td>
-                    <td>1234科技公司</td>
-                    <td>保持关联</td>
-                    <td>添加备注信息</td>
-                    <td class="merge-c"><a>修改</a></td>
-                    <td class="del-c"><a>移除</a></td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox" class="list-checkbox"></td>
-                    <td>EC2-208039220023</td>
-                    <td>A1-1</td>
-                    <td>2018-02-23</td>
-                    <td>1234科技公司</td>
-                    <td>保持关联</td>
-                    <td>添加备注信息</td>
-                    <td class="merge-c"><a>修改</a></td>
-                    <td class="del-c"><a>移除</a></td>
-                </tr>
+                </tr> -->
+                
             </tbody>
         </table>
     </div>
-    <button class="btn border" mat-raised-button (click)="OpenDialog()">点击弹出</button>
 </div>

@@ -1,12 +1,12 @@
-<h1 mat-dialog-title>Hi</h1>
+<h1 mat-dialog-title>信息</h1>
 <div mat-dialog-content>
-  <p>What's your favorite animal?</p>
+  <p>你确定要删除吗？</p>
   
   
 
 </div>
 <div mat-dialog-actions>
   <!-- <button mat-button (click)="onNoClick()">No Thanks</button> -->
-  <button mat-button mat-dialog-close>Cancel</button>
-  <button mat-button [mat-dialog-close] cdkFocusInitial>Ok</button>
+  <button mat-button mat-dialog-close cdkFocusInitial>确定</button>
+  <button mat-button [mat-dialog-close]>取消</button>
 </div>
