@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs/Subscription';
 import { MatDialog } from '@angular/material';
 import { DialogComponent } from './components/dialog/dialog.component';
 import { Template } from './interfaces/template';
+import { ConfirmDialog } from './components/dialog/confirmdialog.component';
 
 
 
@@ -20,10 +21,12 @@ export class AppComponent implements OnInit,OnDestroy {
   boxValue='';
   keyUpTime;
   staticList:Template[];
-  constructor(private restApi:RestApiService,
+  constructor(
+    private restApi:RestApiService,
     public dialog : MatDialog,
-  private dialogComponent:DialogComponent) {
-  }
+    private dialogComponent:DialogComponent,
+    private confirmDialog:ConfirmDialog
+  ) { }
   /**
    * 页面销毁？
    */
@@ -41,17 +44,9 @@ export class AppComponent implements OnInit,OnDestroy {
    * 打开弹出框
    */
   OpenDialog(data):void{
-    var that=this;
     let dialogRef=this.dialog.open(DialogComponent,{
       width:'640px',
       data:{data}
-      // id:data.id,
-      //   serialNo:data.serialNo,
-      //   batchNo:data.batchNo,
-      //   delivery_date:data.delivery_date,
-      //   receiving_party:data.receiving_party,
-      //   status:data.status,
-      //   remark:data.remark
     });
 
     dialogRef.afterClosed().subscribe(result=>{
@@ -80,6 +75,20 @@ export class AppComponent implements OnInit,OnDestroy {
    */
   merge(item):void{
     this.OpenDialog(item);
+  }
+  /**
+   * 删除
+   */
+  remove(key):void{
+    let dialogRef=this.dialog.open(ConfirmDialog,{
+      width:'340px',
+      data:{}
+    });
+
+    dialogRef.afterClosed().subscribe(result=>{
+      console.log(result);
+    })
+    //this.staticList.splice(key,1);
   }
 
 
@@ -135,3 +144,10 @@ export class AppComponent implements OnInit,OnDestroy {
   
 }
 
+// id:data.id,
+      //   serialNo:data.serialNo,
+      //   batchNo:data.batchNo,
+      //   delivery_date:data.delivery_date,
+      //   receiving_party:data.receiving_party,
+      //   status:data.status,
+      //   remark:data.remark
