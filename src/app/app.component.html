@@ -20,6 +20,7 @@
             <button mat-button class="btn back-c1" (click)="getList(box.value)" id="btn_list">批量修改</button>
             <button mat-button class="btn back-c2 btn-margin">保存</button>
             <button mat-button class="btn back-c3 btn-margin">删除</button>
+            
         </div>
     </div>
     <div class="auto m20 foot">
@@ -35,7 +36,7 @@
                     <th>备注</th>
                     <th colspan="2" width="10%">操作</th>
                 </tr>
-                <tr *ngFor="let item of staticList;let i=index">
+                <tr *ngFor="let item of staticList;let i=index" [style.border-bottom-style]="isEnd?'0':'dashed'">
                     <td><input type="checkbox" class="list-checkbox"></td>
                     <td>{{item.serialNo}}</td>
                     <td>{{item.batchNo}}</td>

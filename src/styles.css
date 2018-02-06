@@ -1,7 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
-@import '~app//components/dialog/dialog.component.css';
 @import '~/../node_modules/@angular/material/prebuilt-themes/indigo-pink.css';
-/* @import '../node_modules/@angular/material/prebuilt-themes/indigo-pink.css'; */
+@import '~app/components/dialog/dialog.component.css';
+
+ul{
+	padding: 0;
+	margin: 0;
+}
 
 body{
 	background-color: #fff;

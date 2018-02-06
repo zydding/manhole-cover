@@ -5,7 +5,7 @@ export const TemplateData:Template[]=[
         id:1,
         serialNo:'EC2-201809030001',
         batchNo:'A1-1',
-        delivery_date:new Date(),
+        delivery_date:new Date('2013-01-11'),
         receiving_party:'AAA公司',
         status:'不关联',
         remark:'滚动式的防守的风格撒旦法'
@@ -13,7 +13,7 @@ export const TemplateData:Template[]=[
         id:2,
         serialNo:'CL-201809030001',
         batchNo:'A1-1',
-        delivery_date:new Date(),
+        delivery_date:new Date('2013-01-12'),
         receiving_party:'AAA公司',
         status:'保持关联',
         remark:'上的公司的广告'
@@ -21,7 +21,7 @@ export const TemplateData:Template[]=[
         id:3,
         serialNo:'201509030001',
         batchNo:'A1-1',
-        delivery_date:new Date(),
+        delivery_date:new Date('2013-01-13'),
         receiving_party:'AAA公司',
         status:'不关联',
         remark:'加工方法的'
@@ -29,7 +29,7 @@ export const TemplateData:Template[]=[
         id:4,
         serialNo:'EC2-201809030002',
         batchNo:'A1-1',
-        delivery_date:new Date(),
+        delivery_date:new Date('2013-01-14'),
         receiving_party:'AAA公司',
         status:'保持关联',
         remark:'符合肌肤光滑'

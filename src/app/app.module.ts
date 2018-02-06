@@ -7,25 +7,23 @@ import {
   MatDatepickerModule,
   MatSelectModule,
   MatDialogModule,
-  
-   } from "@angular/material";
+  MatIconModule,
+  MAT_DIALOG_DEFAULT_OPTIONS,
+  MatInputModule,
+} from "@angular/material";
 
-   
 import { FormsModule } from "@angular/forms";
-
 import { HttpModule } from "@angular/http";
-
-import { AppComponent } from './app.component';
+import { AppComponent,DialogComponent } from './app.component';
 import { RestApiService } from "./services/rest-api.service";
 import { CookieService } from "ng2-cookies";
-import { DialogComponent } from './components/dialog/dialog.component';
 import { ConfirmDialog } from './components/dialog/confirmdialog.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    DialogComponent,
     ConfirmDialog,
+    DialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -36,10 +34,22 @@ import { ConfirmDialog } from './components/dialog/confirmdialog.component';
     MatNativeDateModule,
     MatSelectModule,
     MatDialogModule,
+    MatIconModule,
+    MatInputModule,
     FormsModule,
   ],
-  providers: [RestApiService,CookieService,DialogComponent,ConfirmDialog],
-  entryComponents:[DialogComponent,ConfirmDialog],
+  providers: [
+    RestApiService,
+    CookieService,
+    ConfirmDialog,
+    DialogComponent
+  ],
+  entryComponents:[ConfirmDialog,DialogComponent],
   bootstrap: [AppComponent]
+})
+@NgModule({
+  providers:[
+    {provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {hasBackdrop: false}}
+  ]
 })
 export class AppModule { }

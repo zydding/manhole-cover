@@ -1,8 +1,7 @@
 import { OnDestroy,OnInit, Component,Directive,ElementRef,HostListener,Input, Inject } from '@angular/core';
 import { RestApiService } from './services/rest-api.service'
 import { Subscription } from 'rxjs/Subscription';
-import { MatDialog } from '@angular/material';
-import { DialogComponent } from './components/dialog/dialog.component';
+import { MatDialog,MAT_DIALOG_DATA,MatDialogRef } from '@angular/material';
 import { Template } from './interfaces/template';
 import { ConfirmDialog } from './components/dialog/confirmdialog.component';
 
@@ -24,11 +23,10 @@ export class AppComponent implements OnInit,OnDestroy {
   constructor(
     private restApi:RestApiService,
     public dialog : MatDialog,
-    private dialogComponent:DialogComponent,
-    private confirmDialog:ConfirmDialog
+    private confirmDialog:ConfirmDialog,
   ) { }
   /**
-   * 页面销毁？
+   * 页面销毁
    */
   ngOnDestroy():void{
     this.login_state.unsubscribe();
@@ -39,21 +37,6 @@ export class AppComponent implements OnInit,OnDestroy {
   ngOnInit():void{
     this.flag=false;
     this.getStaticList();
-  }
-  /**
-   * 打开弹出框
-   */
-  OpenDialog(data):void{
-    let dialogRef=this.dialog.open(DialogComponent,{
-      width:'640px',
-      data:{data}
-    });
-
-    dialogRef.afterClosed().subscribe(result=>{
-      console.log('close');
-      //this.animal=result;
-      //console.log(this.animal);
-    })
   }
   /**
    * 通过输入框的值获取服务器的数据
@@ -70,46 +53,36 @@ export class AppComponent implements OnInit,OnDestroy {
     this.restApi.getStaticList().then(data=>this.staticList=data);
   }
   /**
-   * 修改
+   * 修改,打开对话框
    * @param item 数据对象
    */
   merge(item):void{
-    this.OpenDialog(item);
-  }
-  /**
-   * 删除
-   */
-  remove(key):void{
-    let dialogRef=this.dialog.open(ConfirmDialog,{
-      width:'340px',
-      data:{}
+    let dialogRef=this.dialog.open(DialogComponent,{
+      minWidth:'660px',
+      data:{item},
+      // disableClose:true,
     });
 
     dialogRef.afterClosed().subscribe(result=>{
       console.log(result);
     })
-    //this.staticList.splice(key,1);
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  /**
+   * 移除
+   */
+  remove(key):void{
+    let dialogRef=this.dialog.open(ConfirmDialog,{
+      width:'340px',
+      height:'200px',
+    });
+    //接收mat-dialog-close传值，为true删除
+    dialogRef.afterClosed().subscribe(result=>{
+      if(result==true){
+        //执行删除list对象，（key：列表序号，1：删除1个）
+        this.staticList.splice(key,1);
+      }
+    })
+  }
   
   Saoma(boxValue,$enent){
     //debugger;
@@ -143,11 +116,38 @@ export class AppComponent implements OnInit,OnDestroy {
   }
   
 }
+/**
+ * 弹出框组件
+ */
+@Component({
+  selector: 'app-dialog',
+  templateUrl: './components/dialog/dialog.component.html',
+})
+export class DialogComponent implements OnInit {
+  //styleUrls: ['./dialog.component.css']
 
-// id:data.id,
-      //   serialNo:data.serialNo,
-      //   batchNo:data.batchNo,
-      //   delivery_date:data.delivery_date,
-      //   receiving_party:data.receiving_party,
-      //   status:data.status,
-      //   remark:data.remark
+  isEnd:Boolean=false;
+
+  //数据
+  itemData:any[]=this.data.item;
+  //状态
+  selected = 'option2';
+  //批次
+  selectBatch='option1';
+  //公司
+  selectCompany='option1';
+  
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data:any,
+    public dialogRef :MatDialogRef<DialogComponent>,
+  ){}
+  //关闭对话框
+  onNoClick():void{
+    this.dialogRef.close('guanbi');
+  }
+
+  ngOnInit() {
+    console.log(this.data.item);
+    
+  }
+}
