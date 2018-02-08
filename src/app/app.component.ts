@@ -15,11 +15,11 @@ import { ConfirmDialog } from './components/dialog/confirmdialog.component';
 })
 export class AppComponent implements OnInit,OnDestroy {
   login_state:Subscription;//Subscription可以调用unsubscribe方法，销毁Observable可观察对象
-  heroes=[];//用来存页面行号的列表
-  flag:boolean;
-  boxValue='';
-  keyUpTime;
+  isCheck=false;
   staticList:Template[];
+  isEnd:boolean=false;
+  list:Template[];
+
   constructor(
     private restApi:RestApiService,
     public dialog : MatDialog,
@@ -35,9 +35,9 @@ export class AppComponent implements OnInit,OnDestroy {
    * 页面初始化
    */
   ngOnInit():void{
-    this.flag=false;
     this.getStaticList();
   }
+  // this.restApi.doCheckLogin();//验证登录
   /**
    * 通过输入框的值获取服务器的数据
    * 
@@ -45,8 +45,8 @@ export class AppComponent implements OnInit,OnDestroy {
    * @param boxValue 输入框的值
    */
   getList(boxValue:string):void{
-    this.restApi.doCheckLogin(boxValue);//验证登录
-    return null;
+    this.restApi.getList(boxValue);
+    //this.list=
   }
   getStaticList():void{
     //return this.restApi.getStaticList();
@@ -74,6 +74,7 @@ export class AppComponent implements OnInit,OnDestroy {
     let dialogRef=this.dialog.open(ConfirmDialog,{
       width:'340px',
       height:'200px',
+      
     });
     //接收mat-dialog-close传值，为true删除
     dialogRef.afterClosed().subscribe(result=>{
@@ -83,7 +84,26 @@ export class AppComponent implements OnInit,OnDestroy {
       }
     })
   }
-  
+  /**
+   * 全选
+   * @param check 是否选中
+   */
+  onChangeCheckBox(check):void{
+    if(check==true){
+      this.isCheck=true;
+    }else{
+      this.isCheck=false;
+    }
+  }
+
+  logout(){
+    // this.router.navigateByUrl("login");
+    //this.restApi.doLoginOut();
+  }
+  /**
+   * @param boxValue 扫码
+   * @param  
+   */
   Saoma(boxValue,$enent){
     //debugger;
     //取得最后的字符串
@@ -114,7 +134,6 @@ export class AppComponent implements OnInit,OnDestroy {
     // }
     // this.keyUpTime = curTime;
   }
-  
 }
 /**
  * 弹出框组件
@@ -125,8 +144,6 @@ export class AppComponent implements OnInit,OnDestroy {
 })
 export class DialogComponent implements OnInit {
   //styleUrls: ['./dialog.component.css']
-
-  isEnd:Boolean=false;
 
   //数据
   itemData:any[]=this.data.item;
@@ -143,11 +160,8 @@ export class DialogComponent implements OnInit {
   ){}
   //关闭对话框
   onNoClick():void{
-    this.dialogRef.close('guanbi');
+    this.dialogRef.close('保存');
   }
 
-  ngOnInit() {
-    console.log(this.data.item);
-    
-  }
+  ngOnInit() { }
 }

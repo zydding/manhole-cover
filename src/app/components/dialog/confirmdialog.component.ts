@@ -8,6 +8,5 @@ import { Component,OnInit } from "@angular/core";
 export class ConfirmDialog implements OnInit{
     constructor(){}//构造函数
     ngOnInit(){
-
     }
 }

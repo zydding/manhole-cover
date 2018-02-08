@@ -11,7 +11,7 @@
 	text-align: right;
 }
 .top-l strong{
-	font-size: 20px;
+	font-size: 1.25em;
 	line-height: 32px;
 }
 .border{
@@ -24,7 +24,7 @@
 .info{
 	background-color: #DCDCDC;
 	height: 20px;
-	font-size: 14px;
+	font-size: .875em;
 }
 .info div{
 	margin-left: 78%;
@@ -69,7 +69,7 @@
 	border: 0;
 	outline: none;
 	line-height: 25px;
-	font-size: 18px;
+	font-size: 1.125em;
 	padding: 5px 0 0 5px;
 	margin: 0;
 }
@@ -85,9 +85,9 @@
 }
 
 .btn{
-	width:120px;
+	width:12.5%;
 	height: 45px;
-	font-size: 16px;
+	font-size: 1em;
 	color: #000;
 	line-height: 45px;
 	padding: 0;
@@ -115,7 +115,7 @@
 
 .foot{
 	clear: both;
-	width: 75%;
+	width: 80%;
 	border: 1px solid #333;
 }
 .foot table{
@@ -129,17 +129,17 @@
 	border-bottom: dashed #c0c0c0 1px;
 }
 .foot table tbody tr th{
-	font-size: 18px;
+	font-size: 1.125em;
 	line-height: 18px;
 	
 }
 .foot table tbody tr td{
-	font-size: 16px;
+	font-size: 1em;
 	text-align: center;
 }
 .foot table tbody tr td a{
 	cursor:pointer;
-	font-size: 14px;
+	font-size: 0.875em;
 }
 .list-checkbox{
 	width: 18px;
@@ -148,7 +148,7 @@
 	height: 18px;
 }
 .merge-c{
-	font-size: 13px;
+	font-size: .8125em;
 	font-weight: bold;
 	color: #7ecef4;
 }

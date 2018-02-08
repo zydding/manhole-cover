@@ -2,7 +2,9 @@
     <div class="info auto">
         <div class="l">用户：
         
-        <span class="logout r">退出</span>
+        <span (click)="logout()" class="logout r">
+            退出
+        </span>
         <span class="username r">bob</span>
     </div>
     </div>
@@ -17,32 +19,40 @@
             </div>
         </div>
         <div class="top-r2 l">
-            <button mat-button class="btn back-c1" (click)="getList(box.value)" id="btn_list">批量修改</button>
+            <button mat-button class="btn back-c1">批量修改</button>
             <button mat-button class="btn back-c2 btn-margin">保存</button>
             <button mat-button class="btn back-c3 btn-margin">删除</button>
-            
+            <button mat-button class="btn back-c2 btn-margin" (click)="getList(box.value)" id="btn_list">测试</button>
         </div>
     </div>
     <div class="auto m20 foot">
         <table border="0">
             <tbody>
                 <tr style="border-bottom-style:solid;">
-                    <th width="8%"><input type="checkbox" class="list-checkbox">选择</th>
+                    <th width="6%">
+                        <mat-checkbox class="list-checkbox" [(ngModel)]="checked" (change)="onChangeCheckBox(checked)">选择</mat-checkbox>
+                        <!-- <input type="checkbox" class="list-checkbox">选择 -->
+                    </th>
                     <th width="12%">序列号</th>
-                    <th>批次</th>
-                    <th width="8%">发货日期</th>
-                    <th width="18%">收货方</th>
-                    <th width="8%">状态</th>
+                    <th width="9%">批次</th>
+                    <th width="9%">型号</th>
+                    <th width="9%">生产日期</th>
+                    <th width="9%">发货日期</th>
+                    <th width="12%">关联厂家</th>
                     <th>备注</th>
-                    <th colspan="2" width="10%">操作</th>
+                    <th colspan="2" width="8%">操作</th>
                 </tr>
-                <tr *ngFor="let item of staticList;let i=index" [style.border-bottom-style]="isEnd?'0':'dashed'">
-                    <td><input type="checkbox" class="list-checkbox"></td>
+                <tr *ngFor="let item of staticList;let i=index" [style.border-bottom-style]="(i>=staticList?.length-1)?'none':'dashed'">
+                    <td>
+                       <!-- <input type="checkbox" class="list-checkbox"> -->
+                       <mat-checkbox class="list-checkbox" [checked]="isCheck"></mat-checkbox>
+                    </td>
                     <td>{{item.serialNo}}</td>
                     <td>{{item.batchNo}}</td>
+                    <td>{{item.moudelNo}}</td>
+                    <td>{{item.product_date|date:"yyyy-MM-dd"}}</td>
                     <td>{{item.delivery_date|date:"yyyy-MM-dd"}}</td>
-                    <td>{{item.receiving_party}}</td>
-                    <td >{{item.status}}</td>
+                    <td>{{item.relevancy_party}}</td>
                     <td>{{item.remark}}</td>
                     <td class="merge-c" (click)="merge(item)"><a>修改</a></td>
                     <td class="del-c" (click)="remove(i)"><a>移除</a></td>

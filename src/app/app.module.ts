@@ -10,6 +10,7 @@ import {
   MatIconModule,
   MAT_DIALOG_DEFAULT_OPTIONS,
   MatInputModule,
+  MatCheckboxModule,
 } from "@angular/material";
 
 import { FormsModule } from "@angular/forms";
@@ -18,6 +19,7 @@ import { AppComponent,DialogComponent } from './app.component';
 import { RestApiService } from "./services/rest-api.service";
 import { CookieService } from "ng2-cookies";
 import { ConfirmDialog } from './components/dialog/confirmdialog.component';
+
 
 @NgModule({
   declarations: [
@@ -36,6 +38,7 @@ import { ConfirmDialog } from './components/dialog/confirmdialog.component';
     MatDialogModule,
     MatIconModule,
     MatInputModule,
+    MatCheckboxModule,
     FormsModule,
   ],
   providers: [
@@ -45,11 +48,7 @@ import { ConfirmDialog } from './components/dialog/confirmdialog.component';
     DialogComponent
   ],
   entryComponents:[ConfirmDialog,DialogComponent],
+  
   bootstrap: [AppComponent]
-})
-@NgModule({
-  providers:[
-    {provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {hasBackdrop: false}}
-  ]
 })
 export class AppModule { }

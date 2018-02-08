@@ -30,7 +30,8 @@ export class RestApiService {
    * @param redirect 下一页面
    */
   doOauthLogin(redirect:string):void{
-    const url=RestApiService.host+'/api-auth/login/?next='+redirect;//const常数不能被更新
+    const url=RestApiService.host+'/api-oauth-login/?next='+redirect;//const常数不能被更新
+    console.log('接下来的地址：'+url);
     window.location.href=url;
   }
   /**
@@ -52,7 +53,7 @@ export class RestApiService {
    */
   getList(boxValue):Promise<Template[]>{
     const header=this.getHeaders();
-    const url=RestApiService.host+'/batch-info/';
+    const url=RestApiService.host+'/factory_information/CL201802080001/';
     return this.http.get(url,{headers:header}).toPromise()
     .then(respone=>respone.json())
     .catch(err=>{
@@ -63,17 +64,21 @@ export class RestApiService {
   /**
    * 验证登录
    */
-  async doCheckLogin(boxValue){
-    await this.getList(boxValue).then(response=>{
-      const url = RestApiService.host + '/batch-info/';
+  async doCheckLogin(){
+    const url=RestApiService.host+'/factory_information';
+    const header=this.getHeaders();
+    await this.http.get(url,{headers:header}).toPromise()
+    .then(response=>{
       this.csrfToken = Cookie.get('csrftoken');
       this._loginStateSource.next(true);
     }).catch(err=>{
+      console.log(err);
       if(err.status===403){
         this._loginStateSource.next(false);
       }
+      console.log('跳转之前的地址：'+window.location.href)
       //失败跳转登录页面
-      this.doOauthLogin('/batch-info/');
+      this.doOauthLogin('传过去地址');
     })
   }
   /**
