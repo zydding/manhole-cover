@@ -4,8 +4,7 @@ import { Subscription } from 'rxjs/Subscription';
 import { MatDialog,MAT_DIALOG_DATA,MatDialogRef } from '@angular/material';
 import { Template } from './interfaces/template';
 import { ConfirmDialog } from './components/dialog/confirmdialog.component';
-
-
+import { Cookie } from "ng2-cookies";
 
 @Component({
   selector: 'app-root',
@@ -19,6 +18,8 @@ export class AppComponent implements OnInit,OnDestroy {
   staticList:Template[];
   isEnd:boolean=false;
   list:Template[];
+  boxValue;
+  //public beforeUrl=document.referrer;
 
   constructor(
     private restApi:RestApiService,
@@ -30,12 +31,34 @@ export class AppComponent implements OnInit,OnDestroy {
    */
   ngOnDestroy():void{
     this.login_state.unsubscribe();
+    //window.localStorage.clear();
   }
   /**
    * 页面初始化
    */
   ngOnInit():void{
-    this.getStaticList();
+    //var href=window.location.href;
+    var token = this.getQueryString('access_token');
+    // var token = window.location.href.replace(/^.+?access_token\=/, '');
+    //let token = this.route.snapshot.queryParams["access_token"];
+    localStorage.setItem('token',token);
+    var a=localStorage.getItem('token').toString();
+    if(a=='undefined' || a==''){
+      this.restApi.doCheckLogin();
+    }else{
+      this.getStaticList();
+      //加上头信息
+      Cookie.set('authorization','Bearer '+token);
+    }
+  }
+  /**
+   * 正则获取参数
+   * @param name 传入需要获取的参数=前面的参数名
+   */
+  getQueryString(name){  
+    var reg = new RegExp("(^|#)"+ name +"=([^&]*)(&|$)");  
+    var r = window.location.hash.substr(1).match(reg);  
+    if (r!=null) return r[2]; return '';  
   }
   // this.restApi.doCheckLogin();//验证登录
   /**
@@ -44,9 +67,41 @@ export class AppComponent implements OnInit,OnDestroy {
    * 服务器通过webpack代理方式通过cookie验证访问
    * @param boxValue 输入框的值
    */
-  getList(boxValue:string):void{
-    this.restApi.getList(boxValue);
-    //this.list=
+  async getList(boxValue:string){
+    await this.restApi.getList(boxValue).then(res=>{
+      for(var i=0;i<res.length;i++){
+        this.staticList.push(res[i]);
+      }
+    });
+    //this.staticList.push(this.list[0]);
+  }
+  /**
+   * 获取单个数据
+   * @param boxValue 扫码
+   */
+  getItem(boxValue:string){
+    if(boxValue.length>0){
+      this.restApi.getItem(boxValue).then(res=>{
+        this.staticList.push(res);
+        console.log(res);
+      }).catch(err=>{
+        console.log('aaa'+err);
+        if(err.status===404){
+          //添加数据
+          this.staticList.push({
+            id:0,
+            serial_number:boxValue,
+            batch:'',
+            model:'',
+            production_date:new Date(),
+            deliver_date:new Date(),
+            relevancy_party:'',
+            batch_comment:'',
+          });
+          this.boxValue='';
+        }
+      });
+    }
   }
   getStaticList():void{
     //return this.restApi.getStaticList();

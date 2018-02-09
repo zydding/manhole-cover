@@ -40,12 +40,13 @@ import { ConfirmDialog } from './components/dialog/confirmdialog.component';
     MatInputModule,
     MatCheckboxModule,
     FormsModule,
+    
   ],
   providers: [
     RestApiService,
     CookieService,
     ConfirmDialog,
-    DialogComponent
+    DialogComponent,
   ],
   entryComponents:[ConfirmDialog,DialogComponent],
   

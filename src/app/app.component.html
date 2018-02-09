@@ -15,14 +15,14 @@
         </div>
         <div class="top-r l">
             <div class="top-r-border border">
-                <textarea #box style=" resize: none;" class="" id="origin" autofocus="autofocus" spellcheck="false"></textarea>
+                <textarea [(ngModel)]="boxValue" #box style=" resize: none;" class="" id="origin" autofocus="autofocus" spellcheck="false"></textarea>
             </div>
         </div>
         <div class="top-r2 l">
             <button mat-button class="btn back-c1">批量修改</button>
             <button mat-button class="btn back-c2 btn-margin">保存</button>
             <button mat-button class="btn back-c3 btn-margin">删除</button>
-            <button mat-button class="btn back-c2 btn-margin" (click)="getList(box.value)" id="btn_list">测试</button>
+            <button mat-button class="btn back-c2 btn-margin" (click)="getItem(box.value)" id="btn_list">测试</button>
         </div>
     </div>
     <div class="auto m20 foot">
@@ -47,13 +47,13 @@
                        <!-- <input type="checkbox" class="list-checkbox"> -->
                        <mat-checkbox class="list-checkbox" [checked]="isCheck"></mat-checkbox>
                     </td>
-                    <td>{{item.serialNo}}</td>
-                    <td>{{item.batchNo}}</td>
-                    <td>{{item.moudelNo}}</td>
-                    <td>{{item.product_date|date:"yyyy-MM-dd"}}</td>
-                    <td>{{item.delivery_date|date:"yyyy-MM-dd"}}</td>
+                    <td>{{item.serial_number}}</td>
+                    <td>{{item.batch}}</td>
+                    <td>{{item.model}}</td>
+                    <td>{{item.production_date|date:"yyyy-MM-dd"}}</td>
+                    <td>{{item.deliver_date|date:"yyyy-MM-dd"}}</td>
                     <td>{{item.relevancy_party}}</td>
-                    <td>{{item.remark}}</td>
+                    <td>{{item.batch_comment}}</td>
                     <td class="merge-c" (click)="merge(item)"><a>修改</a></td>
                     <td class="del-c" (click)="remove(i)"><a>移除</a></td>
                 </tr>
