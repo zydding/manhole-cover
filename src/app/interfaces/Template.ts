@@ -1,5 +1,4 @@
 export interface Template {
-    id:number,
     serial_number:string,//序列号
     batch:string,//批次
     model:string,//型号

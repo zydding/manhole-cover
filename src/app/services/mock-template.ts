@@ -2,7 +2,6 @@ import { Template } from "../interfaces/template";
 
 export const TemplateData:Template[]=[
     {
-        id:1,
         serial_number:'EC2-201809030001',
         batch:'DT20180208',
         model:'EC2-D600',
@@ -11,7 +10,6 @@ export const TemplateData:Template[]=[
         relevancy_party:'AAA公司',
         batch_comment:'滚动式的防守的风格撒旦法'
     },{
-        id:2,
         serial_number:'CL-201809030001',
         batch:'A1-1',
         model:'EC2-D602',
@@ -20,7 +18,6 @@ export const TemplateData:Template[]=[
         relevancy_party:'BBB公司',
         batch_comment:'上的公司的广告'
     },{
-        id:3,
         serial_number:'201509030001',
         batch:'A1-1',
         model:'EC2-D603',
@@ -29,7 +26,6 @@ export const TemplateData:Template[]=[
         relevancy_party:'CCC公司',
         batch_comment:'加工方法的'
     },{
-        id:4,
         serial_number:'EC2-201809030002',
         batch:'A1-1',
         model:'EC2-D604',

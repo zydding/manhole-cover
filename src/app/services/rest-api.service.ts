@@ -4,22 +4,20 @@ import { Subject } from 'rxjs/Subject';
 import { Cookie } from "ng2-cookies";
 import { Template } from '../interfaces/template';
 import { TemplateData } from "./mock-template";
+import { Router } from '@angular/router';
 
 
 @Injectable()
 export class RestApiService {
   static login='/login';//这里加了api，需要在webpack上面替换为空
   static getUrl='/getUrl';
-  private isLogin=false;
-  private authorization:string;
-  private _loginStateSource=new Subject();//subject是Rxjs特殊的observable对象，可共享一个执行环境
-  LoginState$=this._loginStateSource.asObservable();//asObservable用来接收Subject的每次更新
   private response_type:string='token';
   private client_id:string='woHuxyCSfd8EnfUW6Ioi06Y1RT0oVFDvx6xE6x8L';
   private redirect_uri:string='http://localhost:9800/granted/';
 
   constructor(
     private http:Http,
+    private router:Router
   ) { }
   /**
    * 获取头信息
@@ -28,7 +26,7 @@ export class RestApiService {
     const headers= new Headers({'Accept': 'application/json'});
     if(is_Sunbmit){
       //X-CSRFToken
-      headers.append('Authorization',Cookie.get('authorization'));
+      headers.append('Authorization','Bearer '+Cookie.get('authorization'));
       headers.append('Content-Type','application/json');
     }
     return headers;
@@ -52,7 +50,6 @@ export class RestApiService {
     this.http.get(url)
     .toPromise().then(response=>{
       console.log(response);
-      this._loginStateSource.next(false);
     });
   }
 
@@ -76,17 +73,15 @@ export class RestApiService {
   async doCheckLogin(){
     const url='http://api-dev.renjinggai.com:10080/product/factory_information/';
     //const url=RestApiService.getUrl+'/factory_information/';
-    const header=this.getHeaders();
+    const header=this.getHeaders(true);
     await this.http.get(url,{headers:header}).toPromise()
     .then(response=>{
-      //this.authorization = Cookie.get('authorization');
-      this._loginStateSource.next(true);
+      //已经登录
+      console.log('登录了');
+      localStorage.clear();
+      this.router.navigate(['granted',]);
     }).catch(err=>{
       console.log(err);
-      if(err.status===403){
-        this._loginStateSource.next(false);
-      }
-      console.log('跳转之前的地址：'+window.location.href)
       //失败跳转登录页面
       this.doOauthLogin();
     })

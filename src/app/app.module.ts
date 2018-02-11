@@ -15,17 +15,24 @@ import {
 
 import { FormsModule } from "@angular/forms";
 import { HttpModule } from "@angular/http";
-import { AppComponent,DialogComponent } from './app.component';
+import { AppComponent, } from './app.component';
+
 import { RestApiService } from "./services/rest-api.service";
 import { CookieService } from "ng2-cookies";
 import { ConfirmDialog } from './components/dialog/confirmdialog.component';
-
+import { HomeComponent,DialogComponent } from './components/home/home.component';
+import { AppRoutingModule } from './app.routing';
+import { PageNotFoundComponent } from './NotFound.component';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
     AppComponent,
     ConfirmDialog,
     DialogComponent,
+    HomeComponent,
+    PageNotFoundComponent,
+
   ],
   imports: [
     BrowserModule,
@@ -40,7 +47,8 @@ import { ConfirmDialog } from './components/dialog/confirmdialog.component';
     MatInputModule,
     MatCheckboxModule,
     FormsModule,
-    
+    RouterModule,
+    AppRoutingModule,
   ],
   providers: [
     RestApiService,
