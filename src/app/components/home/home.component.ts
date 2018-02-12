@@ -4,29 +4,31 @@ import { Template } from '../../interfaces/template';
 import { MatDialog,MAT_DIALOG_DATA,MatDialogRef } from '@angular/material';
 import { ConfirmDialog } from '../dialog/confirmdialog.component';
 import { Router } from '@angular/router';
-
+import { Cookie } from 'ng2-cookies';
+import { forEach } from '@angular/router/src/utils/collection';
+import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrls: ['./home.component.css'],
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit,OnDestroy {
   staticList:Template[]=[];
   isCheck=false;
   isEnd:boolean=false;
   dirtyList:any[]=[];
+  Invalue;
   //boxValue;
   //[(ngModel)]="boxValue"
-  keyUpTime;
-
   constructor(
     private restApi:RestApiService,
     private dialog:MatDialog,
     private confirmDialog:ConfirmDialog,
     private router:Router,
   ) { }
-
+  ngOnDestroy(){
+  }
   ngOnInit() {
   }
   /**
@@ -49,7 +51,8 @@ export class HomeComponent implements OnInit {
         }
         //this.boxValue='';
       }).catch(err=>{
-        console.log('错误信息：'+err);
+        console.log('服务器错误信息：'+err);
+        console.log('Cookie:'+Cookie.get('authorization'));
         if(err.status===404){
           var isHas=this.checkIsHas(boxValue);//判断是否重复
           //没重复
@@ -133,35 +136,71 @@ export class HomeComponent implements OnInit {
       this.isCheck=false;
     }
   }
-  Saoma(boxValue,$enent){
-    //debugger;
+  async Saoma(boxValue,$enent){
+    //判断，只有在字符串匹配时才去取取数据
     //取得最后的字符串
     var arrayList=boxValue.split('/');
-        boxValue=arrayList[arrayList.length-1];
-    var date=new Date();
-    var curTime = date.getTime();
-    var twoKeyTime;
-    if(this.keyUpTime !== '' && this.keyUpTime !== NaN){
-      twoKeyTime = curTime - this.keyUpTime;
-      if(twoKeyTime >=70){
-        //这里是用户输入
-        console.log('用户输入了:'+boxValue);
-      }else{
-        //这里是扫码
-        console.log('扫码输入了：'+boxValue);
-        this.dirtyList.push(boxValue);
-        debugger;
-        boxValue=this.dirtyList.splice(this.dirtyList.length-1,1);
-        this.getItem(boxValue);
-      }
+    boxValue=arrayList[arrayList.length-1];
+    //这里是扫码
+    console.log('输入了：'+boxValue);
+    await this.dirtyList.push(boxValue);
+    boxValue=this.dirtyList.pop();//取最后一项
+    console.log('这是list：'+this.dirtyList.toString()+'即将添加'+boxValue);
+    //需要先处理字符串
+    var arrayA:any[]=[];
+    arrayA=this.dealArray(boxValue);
+    if(arrayA.length>0){
+      var value='';
+      arrayA.forEach(element => {
+        value=element.value;
+        if(value){
+          return;
+        }
+      });
+      this.getItem(value);//清空
+      this.Invalue='';
+    }else{
+      console.log('没有找到匹配格式');
+      //this.Invalue='';//清空
     }
-    this.keyUpTime = curTime;
+    this.dirtyList.splice(0,this.dirtyList.length);//删除全部
+  }
+  /** 
+   * 处理BoxValue的格式
+   * 期望：判断是否满足三种字符串格式，是返回true，否false
+  */
+  dealArray(boxValue):any[]{
+    var flag=false;
+    console.log('字符总长度：'+boxValue);
+    var patter1=/EC2-\d{12}/g;//匹配EC2
+    var patter2=/CL\d{12}/g;//匹配CL
+    var patter3=/\d{12}/g;//匹配12数字
+    var arrayA=[];
+    //返回包含该查找结果的一个数组。 
+    var arr1,arr2,arr3;
+    if((arr1=patter1.exec(boxValue))!=null){
+      flag=true;
+      console.log('找到了EC2-');
+      arrayA.push({value:arr1[0],flag:flag});
+    }
+    if((arr2=patter2.exec(boxValue))!=null && flag===false){
+      flag=true;
+      console.log('找到了CL');
+      arrayA.push({value:arr2[0],flag:flag});
+    }
+    if((arr3=patter3.exec(boxValue))!=null && flag===false){
+      flag=true;
+      console.log('找到了Num');
+      arrayA.push({value:arr3[0],flag:flag});
+    }
+    return arrayA;
   }
   //退出
   logout(){
-    this.router.navigateByUrl("/");
-    window.location.reload();
-    //this.restApi.doLoginOut();
+    // this.router.navigateByUrl("/");
+    // Cookie.deleteAll();
+    // window.location.reload();
+    this.restApi.doLoginOut();
   }
   
 }

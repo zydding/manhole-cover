@@ -4,9 +4,11 @@ import { AppComponent } from "./app.component";
 import { PageNotFoundComponent } from "./NotFound.component";
 import { HomeComponent } from "./components/home/home.component";
 import { ConfirmDialog } from "./components/dialog/confirmdialog.component";
+import { CanAuthGuard } from "./auth-guard.service";
 
 const routes:Routes=[
-    {path:'granted',component:HomeComponent},
+    {path:'',component:AppComponent},
+    {path:'granted',component:HomeComponent,canActivate:[CanAuthGuard]},
     {path:'**',component:PageNotFoundComponent},
 ]
 

@@ -13,7 +13,8 @@ export class RestApiService {
   static getUrl='/getUrl';
   private response_type:string='token';
   private client_id:string='woHuxyCSfd8EnfUW6Ioi06Y1RT0oVFDvx6xE6x8L';
-  private redirect_uri:string='http://localhost:9800/granted/';
+  redirect_uri:string='http://localhost:9800/granted/';
+  isLoggedIn = false;
 
   constructor(
     private http:Http,
@@ -45,12 +46,9 @@ export class RestApiService {
    * 退出
    */
   doLoginOut():void{
-    const url=RestApiService.login+'/api-oauth/logout/';
-    console.log('退出地址:'+url);
-    this.http.get(url)
-    .toPromise().then(response=>{
-      console.log(response);
-    });
+    console.log('退出了');
+    this.isLoggedIn = false;
+    this.router.navigate(['',]);
   }
 
   /**
@@ -78,6 +76,7 @@ export class RestApiService {
     .then(response=>{
       //已经登录
       console.log('登录了');
+      this.isLoggedIn = true;
       localStorage.clear();
       this.router.navigate(['granted',]);
     }).catch(err=>{

@@ -24,6 +24,8 @@ import { HomeComponent,DialogComponent } from './components/home/home.component'
 import { AppRoutingModule } from './app.routing';
 import { PageNotFoundComponent } from './NotFound.component';
 import { RouterModule } from '@angular/router';
+import { CanAuthGuard } from './auth-guard.service';
+import { BeforeunloadDirective } from './directives/beforeunload.directive';
 
 @NgModule({
   declarations: [
@@ -32,7 +34,7 @@ import { RouterModule } from '@angular/router';
     DialogComponent,
     HomeComponent,
     PageNotFoundComponent,
-
+    BeforeunloadDirective,
   ],
   imports: [
     BrowserModule,
@@ -55,6 +57,7 @@ import { RouterModule } from '@angular/router';
     CookieService,
     ConfirmDialog,
     DialogComponent,
+    CanAuthGuard,
   ],
   entryComponents:[ConfirmDialog,DialogComponent],
   

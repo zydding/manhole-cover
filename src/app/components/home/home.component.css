@@ -12,7 +12,7 @@
 	
 }
 .top-l strong{
-	font-size: 1.25em;
+	font-size: 1.1em;
 	line-height: 32px;
 }
 .border{
@@ -60,7 +60,7 @@
 	width: 30%;
 }
 .top-r-border{
-	width: 80%;
+	width: 70%;
 	border: 1px solid #c0c0c0;
 	height: 35px;
 }
@@ -93,6 +93,7 @@
 	padding: 0;
 	text-align: center;
 	cursor:pointer;
+	border: 0;
 	border-radius: 5px;
 	font-weight: 500;
 }

@@ -26,9 +26,10 @@ export class AppComponent implements OnInit {
    */
   ngOnInit():void{
     //初始化把cookie清空
-    Cookie.deleteAll();
+    //Cookie.deleteAll();
     //取token并保存
     let token = this.getQueryString('access_token');
+    debugger;
     if(token!='undefined' && token!=''){
       localStorage.setItem('token',token);
       let localToken=localStorage.getItem('token');
