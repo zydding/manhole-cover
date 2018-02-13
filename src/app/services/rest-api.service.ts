@@ -76,8 +76,8 @@ export class RestApiService {
     .then(response=>{
       //已经登录
       console.log('登录了');
+      console.log('Cookie:'+Cookie.get('authorization'));
       this.isLoggedIn = true;
-      localStorage.clear();
       this.router.navigate(['granted',]);
     }).catch(err=>{
       console.log(err);
@@ -102,5 +102,13 @@ export class RestApiService {
     return Promise.resolve(TemplateData);
     //return TemplateData;
   }
-  
+  /**
+   * 正则获取参数
+   * @param name 传入需要获取的参数=前面的参数名
+   */
+  getQueryString(name){
+    var reg = new RegExp("(^|#)"+ name +"=([^&]*)(&|$)");  
+    var r = window.location.hash.substr(1).match(reg);  
+    if (r!=null) return r[2]; return '';  
+  }
 }

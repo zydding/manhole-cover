@@ -1,5 +1,5 @@
 .dia{
-    width: 600px;
+    width: 700px;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
@@ -17,7 +17,7 @@
 .dia-head i{
     position: absolute;
     top: 10px;
-    left: 210px;
+    left: 260px;
     border-radius: 30px;
     width: 26px;
     height: 24px;
@@ -80,7 +80,7 @@
 }
 
 .dia-btn{
-    padding-left: 200px;
+    padding-left: 250px;
 }
 
 .btn{

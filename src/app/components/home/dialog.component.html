@@ -1,0 +1,86 @@
+<div class="dia">
+    <div class="dia-head" mat-dialog-title>
+        <i style="background:url('assets/images/icon.jpg') no-repeat -2px -62px;" width="30" height="30"></i>修改井盖信息
+    </div>
+    <div class="dia-body">
+        <table width="100%" style="margin-top:10px;">
+            <tbody>
+                <tr>
+                    <th class="tx-r">序列号：</th>
+                    <th class="tx-l">{{itemData.serial_number}}</th>
+                    <td class="tx-r">批次：</td>
+                    <td class="tx-l">
+                        <div class="td-div-border">
+                            <mat-select [(ngModel)]="selectedBatch" name="batch">
+                                <!-- <mat-option value="option1">DT20180201</mat-option> -->
+                                <mat-option *ngFor="let batch of BatchList"  [value]="batch.value">
+                                        {{batch.value}}
+                                </mat-option>
+                            </mat-select>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="tx-r">型号：</td>
+                    <td class="tx-l">
+                        <div class="td-div-border">
+                            <mat-select [(value)]="selectModel" >
+                                <mat-option value="option1">EC2-D600</mat-option>
+                                <mat-option value="option2">EC2-D601</mat-option>
+                            </mat-select>
+                        </div>
+                    </td>
+                    <td class="tx-r">生产日期：</td>
+                    <td class="tx-l">
+                        <div class="td-div-border">
+                            <input matInput [matDatepicker]="picker1" value="{{itemData.production_date|date:'yyyy-MM-dd'}}" placeholder="请选择日期" disabled>
+                            <mat-datepicker-toggle matSuffix [for]="picker1">
+                                <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                            </mat-datepicker-toggle>
+                            <mat-datepicker #picker1 disabled="false"></mat-datepicker>
+                        </div>
+                    </td>
+                    <!-- <div class="td-div-border"><input type="date"><i  style="background:url('assets/images/icon.jpg') no-repeat -40px -4px;"></i></div> -->
+                </tr>
+                <tr>
+                    <td class="tx-r">发货日期：</td>
+                    <td class="tx-l">
+                        <div class="td-div-border">
+                            <input matInput [matDatepicker]="picker2" value="{{itemData.deliver_date|date:'yyyy-MM-dd'}}" placeholder="请选择日期" disabled>
+                            <mat-datepicker-toggle matSuffix [for]="picker2">
+                                <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                            </mat-datepicker-toggle>
+                            <mat-datepicker #picker2 disabled="false"></mat-datepicker>
+                        </div>
+                    </td>
+                    <td class="tx-r">关联厂家：</td>
+                    <td class="tx-l">
+                        <div class="td-div-border">
+                            <mat-select [(value)]="selectCompany" >
+                                <mat-option value="option1">AAA公司</mat-option>
+                                <mat-option value="option2">BBB公司</mat-option>
+                                <mat-option value="option3">DDD公司</mat-option>
+                            </mat-select>
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td rowspan="3" class="tx-r" style="vertical-align:top;">备注：</td>
+                    <td rowspan="3" colspan="3">
+                        <textarea name="remake" value="{{itemData.batch_comment}}" id="remake_txt" style="resize:none; width:560px; height:80px; text-align:left;" spellcheck="false" placeholder="请输入备注信息">
+                            
+                        </textarea>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="dia-btn">
+            <button mat-button [mat-dialog-close]="true" (click)="onNoClick()" class="btn btn-Confirm">确定</button>
+            <button mat-button class="btn btn-Cancel" mat-dialog-close style="margin-left: 20px;">取消</button>
+        </div>
+    </div>
+</div>
+<!-- <div id="JS_mask" class="c-mask" style=" display:none; height: 884px; width: 100%; position: absolute; top: 0px; left: 0px; opacity: 0.5; z-index: 299; background: rgb(0, 0, 0);"></div> -->
+
+

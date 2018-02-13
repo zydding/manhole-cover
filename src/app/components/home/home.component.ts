@@ -27,9 +27,9 @@ export class HomeComponent implements OnInit,OnDestroy {
     private confirmDialog:ConfirmDialog,
     private router:Router,
   ) { }
-  ngOnDestroy(){
-  }
+  ngOnDestroy(){ }
   ngOnInit() {
+    this.getStaticList();
   }
   /**
    * 获取单个数据
@@ -105,7 +105,7 @@ export class HomeComponent implements OnInit,OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe(result=>{
-      console.log(result);
+      console.log('result'+result);
     })
   }
   /**
@@ -157,8 +157,8 @@ export class HomeComponent implements OnInit,OnDestroy {
           return;
         }
       });
-      this.getItem(value);//清空
-      this.Invalue='';
+      this.getItem(value);
+      this.Invalue='';//清空
     }else{
       console.log('没有找到匹配格式');
       //this.Invalue='';//清空
@@ -209,26 +209,42 @@ export class HomeComponent implements OnInit,OnDestroy {
  */
 @Component({
   selector: 'app-dialog',
-  templateUrl: '../dialog/dialog.component.html',
+  templateUrl: './dialog.component.html',
 })
 export class DialogComponent implements OnInit {
   //styleUrls: ['./dialog.component.css']
 
   //数据
-  itemData:any[]=this.data.item;
-  //状态
-  selected = 'option2';
+  itemData=this.data.item;
+  
+  selectedBatch:string=this.itemData.batch;
+  staticList=[];
+  BatchList=[
+    {value:'DT20180201'},
+    {value:'DT20180202'},
+  ]
+  
   //批次
   selectBatch='option1';
+  //型号
+  selectModel="option1";
   //公司
   selectCompany='option1';
-  
   constructor(
     @Inject(MAT_DIALOG_DATA) public data:any,
     public dialogRef :MatDialogRef<DialogComponent>,
   ){}
   //关闭对话框
   onNoClick():void{
+    console.log(this.selectedBatch);
+    this.staticList.push({
+      batch:'',
+      model:'',
+      production_date:new Date(),
+      deliver_date:new Date(),
+      relevancy_party:'',
+      batch_comment:'',
+    });
     this.dialogRef.close('保存');
   }
   ngOnInit() { }

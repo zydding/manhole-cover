@@ -22,33 +22,12 @@ export class AppComponent implements OnInit {
   /**
    * 页面初始化
    * 验证登录
-   * 
    */
   ngOnInit():void{
-    //初始化把cookie清空
-    //Cookie.deleteAll();
-    //取token并保存
-    let token = this.getQueryString('access_token');
-    debugger;
-    if(token!='undefined' && token!=''){
-      localStorage.setItem('token',token);
-      let localToken=localStorage.getItem('token');
-      //在已经登录后.在cookie加上头信息，用来测试取数据
-      if(localToken!='underfined' && token!=''){
-        Cookie.set('authorization',token);
-      }
-    }
-    //验证登录，如果已经登录则
+    let token = this.restApi.getQueryString('access_token');
+    Cookie.set('authorization',token);
+    console.log('登陆前de token'+token);
+    console.log('Cookie:'+Cookie.get('authorization'));
     this.restApi.doCheckLogin();
   }
-  /**
-   * 正则获取参数
-   * @param name 传入需要获取的参数=前面的参数名
-   */
-  getQueryString(name){
-    var reg = new RegExp("(^|#)"+ name +"=([^&]*)(&|$)");  
-    var r = window.location.hash.substr(1).match(reg);  
-    if (r!=null) return r[2]; return '';  
-  }
-  
 }
