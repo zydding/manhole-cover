@@ -18,7 +18,7 @@
       </div>
       
       <div class="top-r2 r">
-        <button mat-button class="btn back-c2" (click)="getItem(box.value)" id="btn_list">添加</button>
+        <!-- <button mat-button class="btn back-c2" (click)="getItem(box.value)" id="btn_list">添加</button> -->
           <button mat-button class="btn back-c1 btn-margin">批量修改</button>
           <button mat-button class="btn back-c2 btn-margin">保存</button>
           <button mat-button class="btn back-c3 btn-margin">删除</button>
@@ -53,7 +53,7 @@
                   <td>{{item.deliver_date|date:"yyyy-MM-dd"}}</td>
                   <td>{{item.relevancy_party}}</td>
                   <td>{{item.batch_comment}}</td>
-                  <td class="merge-c" (click)="merge(item)"><a>修改</a></td>
+                  <td class="merge-c" (click)="merge(item,i)"><a>修改</a></td>
                   <td class="del-c" (click)="remove(i)"><a>移除</a></td>
               </tr>
               <!-- <tr>

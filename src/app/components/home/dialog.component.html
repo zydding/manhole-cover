@@ -11,12 +11,7 @@
                     <td class="tx-r">批次：</td>
                     <td class="tx-l">
                         <div class="td-div-border">
-                            <mat-select [(ngModel)]="selectedBatch" name="batch">
-                                <!-- <mat-option value="option1">DT20180201</mat-option> -->
-                                <mat-option *ngFor="let batch of BatchList"  [value]="batch.value">
-                                        {{batch.value}}
-                                </mat-option>
-                            </mat-select>
+                            <input matInput [(ngModel)]="selectBatch" spellcheck="false">
                         </div>
                     </td>
                 </tr>
@@ -24,16 +19,18 @@
                     <td class="tx-r">型号：</td>
                     <td class="tx-l">
                         <div class="td-div-border">
-                            <mat-select [(value)]="selectModel" >
-                                <mat-option value="option1">EC2-D600</mat-option>
-                                <mat-option value="option2">EC2-D601</mat-option>
-                            </mat-select>
+                            <input type="text" matInput [(ngModel)]="selectedModel" [formControl]="myControl" [matAutocomplete]="auto" spellcheck="false">
+                            <mat-autocomplete #auto="matAutocomplete">
+                                <mat-option *ngFor="let model of filteredOptions | async"  [value]="model">
+                                    {{model}}
+                                </mat-option>
+                            </mat-autocomplete>
                         </div>
                     </td>
                     <td class="tx-r">生产日期：</td>
                     <td class="tx-l">
                         <div class="td-div-border">
-                            <input matInput [matDatepicker]="picker1" value="{{itemData.production_date|date:'yyyy-MM-dd'}}" placeholder="请选择日期" disabled>
+                            <input matInput [(ngModel)]="production_date" [matDatepicker]="picker1" placeholder="请选择日期" disabled>
                             <mat-datepicker-toggle matSuffix [for]="picker1">
                                 <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
                             </mat-datepicker-toggle>
@@ -46,7 +43,7 @@
                     <td class="tx-r">发货日期：</td>
                     <td class="tx-l">
                         <div class="td-div-border">
-                            <input matInput [matDatepicker]="picker2" value="{{itemData.deliver_date|date:'yyyy-MM-dd'}}" placeholder="请选择日期" disabled>
+                            <input matInput [matDatepicker]="picker2" [(ngModel)]="deliver_date" placeholder="请选择日期" disabled>
                             <mat-datepicker-toggle matSuffix [for]="picker2">
                                 <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
                             </mat-datepicker-toggle>
@@ -56,11 +53,7 @@
                     <td class="tx-r">关联厂家：</td>
                     <td class="tx-l">
                         <div class="td-div-border">
-                            <mat-select [(value)]="selectCompany" >
-                                <mat-option value="option1">AAA公司</mat-option>
-                                <mat-option value="option2">BBB公司</mat-option>
-                                <mat-option value="option3">DDD公司</mat-option>
-                            </mat-select>
+                            <input matInput [(ngModel)]="relevancy_party" disabled>
                         </div>
                     </td>
                 </tr>
@@ -68,7 +61,7 @@
                 <tr>
                     <td rowspan="3" class="tx-r" style="vertical-align:top;">备注：</td>
                     <td rowspan="3" colspan="3">
-                        <textarea name="remake" value="{{itemData.batch_comment}}" id="remake_txt" style="resize:none; width:560px; height:80px; text-align:left;" spellcheck="false" placeholder="请输入备注信息">
+                        <textarea name="remake" [(ngModel)]="batch_comment" id="remake_txt" style="resize:none; width:560px; height:80px; text-align:left;" spellcheck="false" placeholder="请输入备注信息">
                             
                         </textarea>
                     </td>

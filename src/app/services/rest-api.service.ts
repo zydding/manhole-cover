@@ -5,6 +5,7 @@ import { Cookie } from "ng2-cookies";
 import { Template } from '../interfaces/template';
 import { TemplateData } from "./mock-template";
 import { Router } from '@angular/router';
+import { OrgTemplate } from '../interfaces/orgTemplate';
 
 
 @Injectable()
@@ -76,7 +77,7 @@ export class RestApiService {
     .then(response=>{
       //已经登录
       console.log('登录了');
-      console.log('Cookie:'+Cookie.get('authorization'));
+      //console.log('Cookie:'+Cookie.get('authorization'));
       this.isLoggedIn = true;
       this.router.navigate(['granted',]);
     }).catch(err=>{
@@ -86,16 +87,31 @@ export class RestApiService {
     })
   }
   /**
-   * 获取单个数据
+   * 获取设备信息，返回Promise对象
    * @param id 
    */
   getItem(id:string):Promise<Template>{
     const header=this.getHeaders(true);
     const url='http://api-dev.renjinggai.com:10080/product/factory_information/'+id+'/';
+    //生产信息
     return this.http.get(url,{headers:header}).toPromise()
     .then(respone=>respone.json())
     .catch(err=>{
-      return Promise.reject(err)
+      return Promise.reject(err);
+    });
+  }
+  /**
+   * 获取设备关联，返回Promise对象
+   * @param id 
+   */
+  getOrg(id:string):Promise<OrgTemplate>{
+    const header=this.getHeaders(true);
+    const url='http://api-dev.renjinggai.com:10081/global-query/query_serial_no/'+id+'/';
+    //组织信息
+    return this.http.get(url,{headers:header}).toPromise()
+    .then(res=>res.json())
+    .catch(err=>{
+      return Promise.reject(err);
     });
   }
   getStaticList():Promise<Template[]>{

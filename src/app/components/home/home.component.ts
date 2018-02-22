@@ -7,6 +7,10 @@ import { Router } from '@angular/router';
 import { Cookie } from 'ng2-cookies';
 import { forEach } from '@angular/router/src/utils/collection';
 import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
+import { FormControl } from '@angular/forms';
+import { Observable } from 'rxjs/Observable';
+import {startWith} from 'rxjs/operators/startWith';
+import {map} from 'rxjs/operators/map';
 
 @Component({
   selector: 'app-home',
@@ -14,6 +18,7 @@ import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
   styleUrls: ['./home.component.css'],
 })
 export class HomeComponent implements OnInit,OnDestroy {
+
   staticList:Template[]=[];
   isCheck=false;
   isEnd:boolean=false;
@@ -29,20 +34,30 @@ export class HomeComponent implements OnInit,OnDestroy {
   ) { }
   ngOnDestroy(){ }
   ngOnInit() {
-    this.getStaticList();
+    this.Invalue='CL201709060000';
+    //this.getStaticList();
   }
   /**
    * 获取单个数据
    * 判断不能重复
-   * @param boxValue 扫码
+   * @param boxValue 处理后的字符串
    */
   getItem(boxValue:string){
     //var arrayList=boxValue.split('/');
     //boxValue=arrayList[arrayList.length-1];
     if(boxValue.length>0){
       this.restApi.getItem(boxValue).then(res=>{
-        var isHas=this.checkIsHas(boxValue);//判断是否重复
+        const isHas=this.checkIsHas(boxValue);//判断是否重复
         if(!isHas){
+          if(res){
+            //设备关联信息
+            this.restApi.getOrg(boxValue).then(response=>{
+              //合并设备信息
+              res.relevancy_party=response.org_name;
+            }).catch(err=>{
+              console.log('错误信息：没有取到设备关联信息');
+            });
+          }
           this.staticList.push(res);
         }
         else{
@@ -51,10 +66,9 @@ export class HomeComponent implements OnInit,OnDestroy {
         }
         //this.boxValue='';
       }).catch(err=>{
-        console.log('服务器错误信息：'+err);
-        console.log('Cookie:'+Cookie.get('authorization'));
+        //console.log('Cookie:'+Cookie.get('authorization'));
         if(err.status===404){
-          var isHas=this.checkIsHas(boxValue);//判断是否重复
+          const isHas=this.checkIsHas(boxValue);//判断是否重复
           //没重复
           if(!isHas){
             //添加数据
@@ -77,6 +91,8 @@ export class HomeComponent implements OnInit,OnDestroy {
         }
       });
     }
+
+    
   }
   //验证重复
   checkIsHas(value):boolean{
@@ -96,8 +112,9 @@ export class HomeComponent implements OnInit,OnDestroy {
   /**
    * 修改,打开对话框
    * @param item 数据对象
+   * @param index 数据下标
    */
-  merge(item):void{
+  merge(item,index):void{
     let dialogRef=this.dialog.open(DialogComponent,{
       minWidth:'660px',
       data:{item},
@@ -105,8 +122,10 @@ export class HomeComponent implements OnInit,OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe(result=>{
-      console.log('result'+result);
-    })
+      //执行保存
+      //替换当前item的数据staticList
+      this.staticList.splice(index,1,result);//删除一个并替换了
+    });
   }
   /**
    * 移除
@@ -142,10 +161,10 @@ export class HomeComponent implements OnInit,OnDestroy {
     var arrayList=boxValue.split('/');
     boxValue=arrayList[arrayList.length-1];
     //这里是扫码
-    console.log('输入了：'+boxValue);
+    //console.log('输入了：'+boxValue);
     await this.dirtyList.push(boxValue);
     boxValue=this.dirtyList.pop();//取最后一项
-    console.log('这是list：'+this.dirtyList.toString()+'即将添加'+boxValue);
+    //console.log('这是list：'+this.dirtyList.toString()+'即将添加'+boxValue);
     //需要先处理字符串
     var arrayA:any[]=[];
     arrayA=this.dealArray(boxValue);
@@ -160,7 +179,7 @@ export class HomeComponent implements OnInit,OnDestroy {
       this.getItem(value);
       this.Invalue='';//清空
     }else{
-      console.log('没有找到匹配格式');
+      //console.log('没有找到匹配格式');
       //this.Invalue='';//清空
     }
     this.dirtyList.splice(0,this.dirtyList.length);//删除全部
@@ -171,7 +190,7 @@ export class HomeComponent implements OnInit,OnDestroy {
   */
   dealArray(boxValue):any[]{
     var flag=false;
-    console.log('字符总长度：'+boxValue);
+    //console.log('字符总长度：'+boxValue);
     var patter1=/EC2-\d{12}/g;//匹配EC2
     var patter2=/CL\d{12}/g;//匹配CL
     var patter3=/\d{12}/g;//匹配12数字
@@ -180,17 +199,17 @@ export class HomeComponent implements OnInit,OnDestroy {
     var arr1,arr2,arr3;
     if((arr1=patter1.exec(boxValue))!=null){
       flag=true;
-      console.log('找到了EC2-');
+      //console.log('找到了EC2-');
       arrayA.push({value:arr1[0],flag:flag});
     }
     if((arr2=patter2.exec(boxValue))!=null && flag===false){
       flag=true;
-      console.log('找到了CL');
+      //console.log('找到了CL');
       arrayA.push({value:arr2[0],flag:flag});
     }
     if((arr3=patter3.exec(boxValue))!=null && flag===false){
       flag=true;
-      console.log('找到了Num');
+      //console.log('找到了Num');
       arrayA.push({value:arr3[0],flag:flag});
     }
     return arrayA;
@@ -212,40 +231,57 @@ export class HomeComponent implements OnInit,OnDestroy {
   templateUrl: './dialog.component.html',
 })
 export class DialogComponent implements OnInit {
-  //styleUrls: ['./dialog.component.css']
-
   //数据
   itemData=this.data.item;
   
-  selectedBatch:string=this.itemData.batch;
-  staticList=[];
-  BatchList=[
-    {value:'DT20180201'},
-    {value:'DT20180202'},
-  ]
-  
   //批次
-  selectBatch='option1';
+  selectBatch=this.itemData.batch;
   //型号
-  selectModel="option1";
-  //公司
-  selectCompany='option1';
+  selectedModel:string=this.itemData.model;
+  myControl: FormControl = new FormControl();
+  ModelList=[
+    'DT20180201',
+    'DT20180202',
+    'EC2-D600',
+  ];
+  filteredOptions: Observable<string[]>;
+
+  //生产日期
+  production_date= this.itemData.production_date;
+  //发货日期
+  deliver_date=this.itemData.deliver_date;
+  //关联厂家
+  relevancy_party=this.itemData.relevancy_party;
+  //备注
+  batch_comment=this.itemData.batch_comment;
   constructor(
     @Inject(MAT_DIALOG_DATA) public data:any,
     public dialogRef :MatDialogRef<DialogComponent>,
   ){}
   //关闭对话框
   onNoClick():void{
-    console.log(this.selectedBatch);
-    this.staticList.push({
-      batch:'',
-      model:'',
-      production_date:new Date(),
-      deliver_date:new Date(),
-      relevancy_party:'',
-      batch_comment:'',
-    });
-    this.dialogRef.close('保存');
+    let staticList:Template={
+      serial_number:this.itemData.serial_number,
+      batch:this.selectBatch,
+      model:this.selectedModel,
+      production_date:this.production_date,
+      deliver_date:this.deliver_date,
+      relevancy_party:this.relevancy_party,
+      batch_comment:this.batch_comment,
+    };
+    this.dialogRef.close(staticList);
   }
-  ngOnInit() { }
+
+  ngOnInit() { 
+    this.filteredOptions=this.myControl.valueChanges
+    .pipe(
+      startWith(''),
+      map(val=>this.filter(val)),
+    );
+  }
+  //过滤
+  filter(val:string):string[]{
+    return this.ModelList.filter(res=>
+    res.toLowerCase().indexOf(val.toLowerCase())===0);
+  }
 }

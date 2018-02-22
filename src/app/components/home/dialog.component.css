@@ -56,8 +56,9 @@
 .dia .dia-body table tbody tr td div input{
     border: 0;
     outline: 0;
+    margin-top:1px;
     vertical-align: top;
-    height: 26px;
+    height: 25px;
     width: 78%;
 }
 

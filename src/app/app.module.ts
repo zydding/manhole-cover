@@ -11,9 +11,10 @@ import {
   MAT_DIALOG_DEFAULT_OPTIONS,
   MatInputModule,
   MatCheckboxModule,
+  MatAutocompleteModule,
 } from "@angular/material";
 
-import { FormsModule } from "@angular/forms";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { HttpModule } from "@angular/http";
 import { AppComponent, } from './app.component';
 
@@ -48,7 +49,9 @@ import { BeforeunloadDirective } from './directives/beforeunload.directive';
     MatIconModule,
     MatInputModule,
     MatCheckboxModule,
+    MatAutocompleteModule,
     FormsModule,
+    ReactiveFormsModule,
     RouterModule,
     AppRoutingModule,
   ],
