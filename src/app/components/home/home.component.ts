@@ -58,6 +58,7 @@ export class HomeComponent implements OnInit,OnDestroy {
               console.log('错误信息：没有取到设备关联信息');
             });
           }
+          //debugger;
           this.staticList.push(res);
         }
         else{
@@ -76,10 +77,11 @@ export class HomeComponent implements OnInit,OnDestroy {
               serial_number:boxValue,
               batch:'',
               model:'',
-              production_date:new Date(),
-              deliver_date:new Date(),
+              production_date:this.restApi.toYYYYMMDD(new Date()),
+              deliver_date:this.restApi.toYYYYMMDD(new Date()),
               relevancy_party:'',
               batch_comment:'',
+              status:'new'
             });
           }else{
             //alert('序列号重复了，请确认！');
@@ -122,9 +124,12 @@ export class HomeComponent implements OnInit,OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe(result=>{
-      //执行保存
-      //替换当前item的数据staticList
-      this.staticList.splice(index,1,result);//删除一个并替换了
+      //防止result为空
+      if(result){
+        //替换当前item的数据staticList
+        this.staticList.splice(index,1,result);//删除一个并替换了
+        //this.save();
+      }
     });
   }
   /**
@@ -134,7 +139,6 @@ export class HomeComponent implements OnInit,OnDestroy {
     let dialogRef=this.dialog.open(ConfirmDialog,{
       width:'340px',
       height:'200px',
-      
     });
     //接收mat-dialog-close传值，为true删除
     dialogRef.afterClosed().subscribe(result=>{
@@ -221,7 +225,10 @@ export class HomeComponent implements OnInit,OnDestroy {
     // window.location.reload();
     this.restApi.doLoginOut();
   }
-  
+  save(){
+    //执行保存
+    this.restApi.save(this.staticList);
+  }
 }
 /**
  * 弹出框组件
@@ -257,31 +264,40 @@ export class DialogComponent implements OnInit {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data:any,
     public dialogRef :MatDialogRef<DialogComponent>,
+    public restApi:RestApiService,
   ){}
-  //关闭对话框
+  //关闭对话框,返回修改后的数据
   onNoClick():void{
-    let staticList:Template={
+    let result:Template={
       serial_number:this.itemData.serial_number,
       batch:this.selectBatch,
       model:this.selectedModel,
-      production_date:this.production_date,
-      deliver_date:this.deliver_date,
+      production_date:this.restApi.toYYYYMMDD(this.production_date),
+      deliver_date:this.restApi.toYYYYMMDD(this.deliver_date),
       relevancy_party:this.relevancy_party,
       batch_comment:this.batch_comment,
+      status:this.itemData.status,
     };
-    this.dialogRef.close(staticList);
+    this.dialogRef.close(result);
   }
 
-  ngOnInit() { 
+  ngOnInit() {
     this.filteredOptions=this.myControl.valueChanges
     .pipe(
       startWith(''),
       map(val=>this.filter(val)),
     );
+    //pipe()和then()效果相同，then()方法返回一个新的承诺，可以通过函数过滤延迟的状态和值，取代现在不推荐使用的deferred.pipe()方法
+    //source1.subscribe是订阅，即数据更新时的响应方法。同时返回订阅实例Subscription
+    // forEach和subscribe相似，同是实现订阅效果，等到promise可以监控subscription完成和失败的异常。
+    //startWith，source = source1.startWith(value), 表示在source1的最前面注入第一次发射数据
+    //map，source = source1.map(func)表示source1每次发射数据时经过func函数处理，返回新的值作为source发射的数据
   }
   //过滤
   filter(val:string):string[]{
     return this.ModelList.filter(res=>
     res.toLowerCase().indexOf(val.toLowerCase())===0);
+    //modelList.filter(res=>res.indexOf(val)===0)
+    //返回String[]，返回val在res中首次出现的位置,首次出现的位置为0则返回。
   }
 }

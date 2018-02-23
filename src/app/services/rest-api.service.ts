@@ -118,6 +118,36 @@ export class RestApiService {
     return Promise.resolve(TemplateData);
     //return TemplateData;
   }
+  save(data:Template[]){
+    let isSuccess=false;
+    const header=this.getHeaders(true);
+    let id='';
+    //逐条保存
+    data.forEach(element => {
+      id=element.serial_number;
+      let url='http://api-dev.renjinggai.com:10080/product/factory_information/';
+      //判断是否属于新增
+      debugger;
+      if(element.status==='new'){
+        
+        console.log('post前输出时间：'+element.production_date.toString()+element.deliver_date);
+        this.http.post(url,JSON.stringify(element),{headers:header})
+        .toPromise()
+        .then(()=>element)
+        .catch(this.handleError);
+      }else{
+        url='http://api-dev.renjinggai.com:10080/product/factory_information/'+ id +'/';
+        this.http.put(url,JSON.stringify(element),{headers:header})
+        .toPromise()
+        .then(()=>element)
+        .catch(this.handleError);
+      }
+    });
+  }
+  private handleError(error:any):Promise<any>{
+    console.log('an error occurred：',error);
+    return Promise.reject(error.message||error);
+  }
   /**
    * 正则获取参数
    * @param name 传入需要获取的参数=前面的参数名
@@ -126,5 +156,16 @@ export class RestApiService {
     var reg = new RegExp("(^|#)"+ name +"=([^&]*)(&|$)");  
     var r = window.location.hash.substr(1).match(reg);  
     if (r!=null) return r[2]; return '';  
+  }
+  //日期转string
+  toYYYYMMDD(date) {
+    console.log('========================================');
+    console.log(typeof(date));
+    var d = typeof(date)=='string'?new Date(date):new Date(date.getTime());
+    var dd = d.getDate() < 10 ? "0" + d.getDate() : d.getDate().toString();
+    var mm = (d.getMonth()+1)< 10 ? "0" + (d.getMonth() + 1) : (d.getMonth() + 1).toString();
+    //var aa=d.getMonth()+1;
+    var yyyy = d.getFullYear().toString(); //2011
+    return yyyy+'-'+mm+'-'+dd;
   }
 }
