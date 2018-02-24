@@ -1,7 +1,7 @@
 import { Component, OnInit,Inject } from '@angular/core';
 import { RestApiService } from '../../services/rest-api.service';
 import { Template } from '../../interfaces/template';
-import { MatDialog,MAT_DIALOG_DATA,MatDialogRef } from '@angular/material';
+import { MatDialog,MAT_DIALOG_DATA,MatDialogRef, MatTableDataSource } from '@angular/material';
 import { ConfirmDialog } from '../dialog/confirmdialog.component';
 import { Router } from '@angular/router';
 import { Cookie } from 'ng2-cookies';
@@ -11,6 +11,8 @@ import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs/Observable';
 import {startWith} from 'rxjs/operators/startWith';
 import {map} from 'rxjs/operators/map';
+import { SelectionModel } from '@angular/cdk/collections';
+import { DelconfirmComponent } from '../dialog/delconfirm.component';
 
 @Component({
   selector: 'app-home',
@@ -19,13 +21,13 @@ import {map} from 'rxjs/operators/map';
 })
 export class HomeComponent implements OnInit,OnDestroy {
 
-  staticList:Template[]=[];
-  isCheck=false;
-  isEnd:boolean=false;
+  displayedColumns=['select','serial_number','batch','model','production_date','deliver_date','relevancy_party','batch_comment','handle'];
+  dataSource=new MatTableDataSource<Template>([]);
+  selection=new SelectionModel<Template>(true,[]);
+
+  // isCheck=false;
   dirtyList:any[]=[];
-  Invalue;
-  //boxValue;
-  //[(ngModel)]="boxValue"
+  boxValue;
   constructor(
     private restApi:RestApiService,
     private dialog:MatDialog,
@@ -34,7 +36,7 @@ export class HomeComponent implements OnInit,OnDestroy {
   ) { }
   ngOnDestroy(){ }
   ngOnInit() {
-    this.Invalue='CL201709060000';
+    this.boxValue='CL201709060000';
     //this.getStaticList();
   }
   /**
@@ -58,8 +60,9 @@ export class HomeComponent implements OnInit,OnDestroy {
               console.log('错误信息：没有取到设备关联信息');
             });
           }
-          //debugger;
-          this.staticList.push(res);
+          this.dataSource.data.push(res);
+          this.dataSource._updateChangeSubscription();
+          this.boxValue='';//清空
         }
         else{
           //alert('序列号重复了，请确认！');
@@ -73,7 +76,7 @@ export class HomeComponent implements OnInit,OnDestroy {
           //没重复
           if(!isHas){
             //添加数据
-            this.staticList.push({
+            this.dataSource.data.push({
               serial_number:boxValue,
               batch:'',
               model:'',
@@ -83,6 +86,8 @@ export class HomeComponent implements OnInit,OnDestroy {
               batch_comment:'',
               status:'new'
             });
+            this.dataSource._updateChangeSubscription();
+            this.boxValue='';//清空
           }else{
             //alert('序列号重复了，请确认！');
             console.log('序列号重复了，请确认！');
@@ -99,17 +104,16 @@ export class HomeComponent implements OnInit,OnDestroy {
   //验证重复
   checkIsHas(value):boolean{
     var isHas=false;
-    this.staticList.forEach(element => {
+    this.dataSource.data.forEach(element=>{
       if(element.serial_number==value){
-        isHas=true;
-        return;
+        isHas=true;return;
       }
     });
     return isHas;
   }
-  getStaticList():void{
+  getStaticList(){
     //return this.restApi.getStaticList();
-    this.restApi.getStaticList().then(data=>this.staticList=data);
+    this.restApi.getStaticList().then(data=>{this.dataSource.data=data;});
   }
   /**
    * 修改,打开对话框
@@ -127,7 +131,8 @@ export class HomeComponent implements OnInit,OnDestroy {
       //防止result为空
       if(result){
         //替换当前item的数据staticList
-        this.staticList.splice(index,1,result);//删除一个并替换了
+        this.dataSource.data.splice(index,1,result);//删除一个并替换了
+        this.dataSource._updateChangeSubscription();
         //this.save();
       }
     });
@@ -135,7 +140,7 @@ export class HomeComponent implements OnInit,OnDestroy {
   /**
    * 移除
    */
-  remove(key):void{
+  remove(index):void{
     let dialogRef=this.dialog.open(ConfirmDialog,{
       width:'340px',
       height:'200px',
@@ -144,21 +149,27 @@ export class HomeComponent implements OnInit,OnDestroy {
     dialogRef.afterClosed().subscribe(result=>{
       if(result==true){
         //执行删除list对象，（key：列表序号，1：删除1个）
-        this.staticList.splice(key,1);
+        this.dataSource.data.splice(index,1);
+        this.dataSource._updateChangeSubscription();
       }
-    })
+    });
+  }
+  /**
+   * 判断全选
+   * 返回ture or false
+   */
+  isAllSelected(){
+    const numSelected=this.selection.selected.length;
+    const numRows=this.dataSource.data.length;
+    return numSelected===numRows;
   }
   /**
    * 全选
-   * @param check 是否选中
    */
-  onChangeCheckBox(check):void{
-    if(check==true){
-      this.isCheck=true;
-    }else{
-      this.isCheck=false;
-    }
+  masterToggle(){
+    this.isAllSelected()?this.selection.clear():this.dataSource.data.forEach(row=>this.selection.select(row));
   }
+
   async Saoma(boxValue,$enent){
     //判断，只有在字符串匹配时才去取取数据
     //取得最后的字符串
@@ -181,10 +192,10 @@ export class HomeComponent implements OnInit,OnDestroy {
         }
       });
       this.getItem(value);
-      this.Invalue='';//清空
+      
     }else{
       //console.log('没有找到匹配格式');
-      //this.Invalue='';//清空
+      //this.boxValue='';//清空
     }
     this.dirtyList.splice(0,this.dirtyList.length);//删除全部
   }
@@ -225,9 +236,81 @@ export class HomeComponent implements OnInit,OnDestroy {
     // window.location.reload();
     this.restApi.doLoginOut();
   }
+  //保存
   save(){
-    //执行保存
-    this.restApi.save(this.staticList);
+    let dialogRef=this.dialog.open(ConfirmDialog,{
+      width:'340px',
+      height:'200px',
+    });
+    //接收mat-dialog-close传值，为true删除
+    dialogRef.afterClosed().subscribe(result=>{
+      if(result==true){
+        let isSuccess = this.restApi.save(this.dataSource.data);
+        if(isSuccess){
+          alert('保存成功！');
+        }else{
+          alert('保存失败！');
+        }
+      }
+    });
+  }
+  /**
+   * 批量修改
+   */
+  mergeMore(){
+    if(this.selection.selected.length>0){
+      //默认编辑第一个对象，替换所有对象
+      let item=this.selection.selected[0];
+      let dialogRef=this.dialog.open(DialogComponent,{
+        minWidth:'660px',
+        data:{item},
+      });
+      dialogRef.afterClosed().subscribe(result=>{
+        //防止result为空
+        if(result){
+          this.selection.selected.forEach(ele=>{
+            ele.batch=result.batch;//批次
+            ele.model=result.model;//型号
+            ele.deliver_date=result.deliver_date;//发货日期
+            ele.batch_comment=result.batch_comment;//备注
+          });
+        }
+      });
+    }else{
+      alert('没有选择！');
+    }
+  }
+  /**
+   * 删除
+   */
+  del(){
+    if(this.selection.selected.length>0){
+      //调用删除方法
+      let dialogRef=this.dialog.open(DelconfirmComponent,{
+        width:'340px',
+        height:'200px',
+      });
+      //接收mat-dialog-close传值，为true删除
+      dialogRef.afterClosed().subscribe(result=>{
+        if(result==true){
+          let flage=this.restApi.del(this.selection.selected);
+          if(flage){
+            //移出所有选中的
+            this.selection.selected.forEach(element => {
+              //console.log('删除位置:'+this.dataSource.data.indexOf(element));
+              this.dataSource.data.splice(this.dataSource.data.indexOf(element),1);
+            });
+            this.selection.clear();
+            this.dataSource._updateChangeSubscription();
+            alert('删除成功!');
+          }else{
+            alert('删除失败!');
+          }
+        }
+      });
+    }else{
+      alert('没有选择！');
+    }
   }
 }
 /**

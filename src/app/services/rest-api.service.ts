@@ -84,7 +84,7 @@ export class RestApiService {
       console.log(err);
       //失败跳转登录页面
       this.doOauthLogin();
-    })
+    });
   }
   /**
    * 获取设备信息，返回Promise对象
@@ -118,35 +118,79 @@ export class RestApiService {
     return Promise.resolve(TemplateData);
     //return TemplateData;
   }
-  save(data:Template[]){
-    let isSuccess=false;
+  async save(data:Template[]):Promise<boolean>{
+    let isSuccess=[];
     const header=this.getHeaders(true);
     let id='';
     //逐条保存
-    data.forEach(element => {
+    await data.forEach(element => {
       id=element.serial_number;
       let url='http://api-dev.renjinggai.com:10080/product/factory_information/';
       //判断是否属于新增
-      debugger;
       if(element.status==='new'){
-        
-        console.log('post前输出时间：'+element.production_date.toString()+element.deliver_date);
+        console.log('post成功把所有状态改为old');
         this.http.post(url,JSON.stringify(element),{headers:header})
         .toPromise()
-        .then(()=>element)
-        .catch(this.handleError);
+        .then(()=>{
+          element.status='old';
+          console.log('post成功返回信息为：'+element);
+        }).catch(err=>{
+          isSuccess.push('0');
+          console.log(Promise.reject(err));
+        });
       }else{
+        console.log('put');
         url='http://api-dev.renjinggai.com:10080/product/factory_information/'+ id +'/';
         this.http.put(url,JSON.stringify(element),{headers:header})
         .toPromise()
         .then(()=>element)
-        .catch(this.handleError);
+        .catch(err=>{
+          isSuccess.push('0');
+          console.log(Promise.reject(err));
+        });
       }
     });
+    console.log('是否保存成功：'+isSuccess.find(element=>element=='0'));
+    if(isSuccess.length>0){
+      console.log('保存失败');
+      return false;
+    }else{
+      console.log('保存成功');
+      return true;
+    }
   }
   private handleError(error:any):Promise<any>{
     console.log('an error occurred：',error);
     return Promise.reject(error.message||error);
+  }
+  /**
+   * 删除
+   */
+  del(data:Template[]):boolean{
+    let isSuccess=[];
+    let url='';
+    const header=this.getHeaders(true);
+    data.forEach(element => {
+      //为new的不用删除
+      let status=element.status==='new' ? true : false;
+      if(!status){
+        url='http://api-dev.renjinggai.com:10080/product/factory_information/'+ element.serial_number +'/';
+        this.http.delete(url,{headers:header})
+        .toPromise()
+        .then()
+        .catch(err=>{
+          isSuccess.push('0');
+          console.log(Promise.reject(err));
+        });
+      }
+    });
+    if(isSuccess.length>0){
+      console.log('删除失败');
+      return false;
+    }else{
+      console.log('删除成功');
+      return true;
+    }
   }
   /**
    * 正则获取参数
@@ -159,12 +203,11 @@ export class RestApiService {
   }
   //日期转string
   toYYYYMMDD(date) {
-    console.log('========================================');
-    console.log(typeof(date));
+    console.log('日期的类型：'+typeof(date)+'+date:'+date);
+    if(date==='')return '';
     var d = typeof(date)=='string'?new Date(date):new Date(date.getTime());
     var dd = d.getDate() < 10 ? "0" + d.getDate() : d.getDate().toString();
     var mm = (d.getMonth()+1)< 10 ? "0" + (d.getMonth() + 1) : (d.getMonth() + 1).toString();
-    //var aa=d.getMonth()+1;
     var yyyy = d.getFullYear().toString(); //2011
     return yyyy+'-'+mm+'-'+dd;
   }

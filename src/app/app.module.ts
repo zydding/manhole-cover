@@ -12,6 +12,7 @@ import {
   MatInputModule,
   MatCheckboxModule,
   MatAutocompleteModule,
+  MatTableModule,
 } from "@angular/material";
 
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
@@ -22,11 +23,14 @@ import { RestApiService } from "./services/rest-api.service";
 import { CookieService } from "ng2-cookies";
 import { ConfirmDialog } from './components/dialog/confirmdialog.component';
 import { HomeComponent,DialogComponent } from './components/home/home.component';
+import { DelconfirmComponent } from './components/dialog/delconfirm.component';
+
 import { AppRoutingModule } from './app.routing';
 import { PageNotFoundComponent } from './NotFound.component';
 import { RouterModule } from '@angular/router';
 import { CanAuthGuard } from './auth-guard.service';
 import { BeforeunloadDirective } from './directives/beforeunload.directive';
+import { SaveconfirmComponent } from './components/dialog/saveconfirm.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +40,8 @@ import { BeforeunloadDirective } from './directives/beforeunload.directive';
     HomeComponent,
     PageNotFoundComponent,
     BeforeunloadDirective,
+    DelconfirmComponent,
+    SaveconfirmComponent,
   ],
   imports: [
     BrowserModule,
@@ -50,6 +56,7 @@ import { BeforeunloadDirective } from './directives/beforeunload.directive';
     MatInputModule,
     MatCheckboxModule,
     MatAutocompleteModule,
+    MatTableModule,
     FormsModule,
     ReactiveFormsModule,
     RouterModule,
@@ -60,9 +67,11 @@ import { BeforeunloadDirective } from './directives/beforeunload.directive';
     CookieService,
     ConfirmDialog,
     DialogComponent,
+    DelconfirmComponent,
+    SaveconfirmComponent,
     CanAuthGuard,
   ],
-  entryComponents:[ConfirmDialog,DialogComponent],
+  entryComponents:[ConfirmDialog,DialogComponent,DelconfirmComponent,SaveconfirmComponent,],
   
   bootstrap: [AppComponent]
 })

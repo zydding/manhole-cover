@@ -143,17 +143,41 @@
 	font-size: 0.875em;
 }
 .list-checkbox{
-	width: 18px;
-	cursor: pointer;
-	padding-right: 10px;
-	height: 18px;
+	margin-left:10px;
 }
 .merge-c{
-	font-size: .8125em;
-	font-weight: bold;
+	padding:3px;
+	font-weight: 400;
 	color: #7ecef4;
 }
 .del-c{
-	font-weight: bold;
+	padding:3px;
+	margin-left: 8px;
+	font-weight: 400;
 	color:#f6b37f;
+}
+
+.mat-header-cell{
+	font-size: 1em;
+}
+
+.mat-column-select {
+	overflow: visible;
+	max-width: 5%;
+}
+.mat-column-serial_number,
+.mat-column-relevancy_party{
+	max-width: 12%;
+}
+
+.mat-column-production_date,
+.mat-column-deliver_date{
+  max-width: 9%;
+}
+.mat-column-batch,
+.mat-column-model{
+	max-width: 8%;
+}
+.mat-column-handle{
+	max-width: 8%;
 }
