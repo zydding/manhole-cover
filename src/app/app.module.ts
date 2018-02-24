@@ -21,27 +21,21 @@ import { AppComponent, } from './app.component';
 
 import { RestApiService } from "./services/rest-api.service";
 import { CookieService } from "ng2-cookies";
-import { ConfirmDialog } from './components/dialog/confirmdialog.component';
-import { HomeComponent,DialogComponent } from './components/home/home.component';
-import { DelconfirmComponent } from './components/dialog/delconfirm.component';
+import { HomeComponent,DialogComponent,ConfirmComponent,AlertComponent } from './components/home/home.component';
 
 import { AppRoutingModule } from './app.routing';
 import { PageNotFoundComponent } from './NotFound.component';
 import { RouterModule } from '@angular/router';
 import { CanAuthGuard } from './auth-guard.service';
-import { BeforeunloadDirective } from './directives/beforeunload.directive';
-import { SaveconfirmComponent } from './components/dialog/saveconfirm.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    ConfirmDialog,
     DialogComponent,
+    ConfirmComponent,
+    AlertComponent,
     HomeComponent,
     PageNotFoundComponent,
-    BeforeunloadDirective,
-    DelconfirmComponent,
-    SaveconfirmComponent,
   ],
   imports: [
     BrowserModule,
@@ -65,13 +59,12 @@ import { SaveconfirmComponent } from './components/dialog/saveconfirm.component'
   providers: [
     RestApiService,
     CookieService,
-    ConfirmDialog,
     DialogComponent,
-    DelconfirmComponent,
-    SaveconfirmComponent,
+    ConfirmComponent,
+    AlertComponent,
     CanAuthGuard,
   ],
-  entryComponents:[ConfirmDialog,DialogComponent,DelconfirmComponent,SaveconfirmComponent,],
+  entryComponents:[DialogComponent,ConfirmComponent,AlertComponent,],
   
   bootstrap: [AppComponent]
 })

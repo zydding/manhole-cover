@@ -47,9 +47,11 @@ export class RestApiService {
    * 退出
    */
   doLoginOut():void{
-    console.log('退出了');
+    //清除登录信息
     this.isLoggedIn = false;
-    this.router.navigate(['',]);
+    console.log('退出了');
+    //失败跳转登录页面
+    this.doOauthLogin();
   }
 
   /**
@@ -123,7 +125,7 @@ export class RestApiService {
     const header=this.getHeaders(true);
     let id='';
     //逐条保存
-    await data.forEach(element => {
+    data.forEach(element => {
       id=element.serial_number;
       let url='http://api-dev.renjinggai.com:10080/product/factory_information/';
       //判断是否属于新增
@@ -135,8 +137,8 @@ export class RestApiService {
           element.status='old';
           console.log('post成功返回信息为：'+element);
         }).catch(err=>{
-          isSuccess.push('0');
-          console.log(Promise.reject(err));
+          isSuccess.push(0);
+          console.log('错误了：'+Promise.reject(err));
         });
       }else{
         console.log('put');
@@ -145,12 +147,13 @@ export class RestApiService {
         .toPromise()
         .then(()=>element)
         .catch(err=>{
-          isSuccess.push('0');
-          console.log(Promise.reject(err));
+          debugger;
+          isSuccess.push(0);
+          console.log('错误了：'+Promise.reject(err));
         });
       }
     });
-    console.log('是否保存成功：'+isSuccess.find(element=>element=='0'));
+    console.log('是否保存成功：'+isSuccess.length);
     if(isSuccess.length>0){
       console.log('保存失败');
       return false;

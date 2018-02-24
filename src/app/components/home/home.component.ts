@@ -2,7 +2,6 @@ import { Component, OnInit,Inject } from '@angular/core';
 import { RestApiService } from '../../services/rest-api.service';
 import { Template } from '../../interfaces/template';
 import { MatDialog,MAT_DIALOG_DATA,MatDialogRef, MatTableDataSource } from '@angular/material';
-import { ConfirmDialog } from '../dialog/confirmdialog.component';
 import { Router } from '@angular/router';
 import { Cookie } from 'ng2-cookies';
 import { forEach } from '@angular/router/src/utils/collection';
@@ -12,7 +11,6 @@ import { Observable } from 'rxjs/Observable';
 import {startWith} from 'rxjs/operators/startWith';
 import {map} from 'rxjs/operators/map';
 import { SelectionModel } from '@angular/cdk/collections';
-import { DelconfirmComponent } from '../dialog/delconfirm.component';
 
 @Component({
   selector: 'app-home',
@@ -31,13 +29,12 @@ export class HomeComponent implements OnInit,OnDestroy {
   constructor(
     private restApi:RestApiService,
     private dialog:MatDialog,
-    private confirmDialog:ConfirmDialog,
     private router:Router,
   ) { }
   ngOnDestroy(){ }
   ngOnInit() {
     this.boxValue='CL201709060000';
-    //this.getStaticList();
+    this.getStaticList();
   }
   /**
    * 获取单个数据
@@ -65,7 +62,6 @@ export class HomeComponent implements OnInit,OnDestroy {
           this.boxValue='';//清空
         }
         else{
-          //alert('序列号重复了，请确认！');
           console.log('序列号重复了，请确认！');
         }
         //this.boxValue='';
@@ -89,7 +85,6 @@ export class HomeComponent implements OnInit,OnDestroy {
             this.dataSource._updateChangeSubscription();
             this.boxValue='';//清空
           }else{
-            //alert('序列号重复了，请确认！');
             console.log('序列号重复了，请确认！');
           }
           //this.boxValue='';
@@ -141,15 +136,18 @@ export class HomeComponent implements OnInit,OnDestroy {
    * 移除
    */
   remove(index):void{
-    let dialogRef=this.dialog.open(ConfirmDialog,{
+    let info = '你确定移出吗？';
+    let dialogRef=this.dialog.open(ConfirmComponent,{
       width:'340px',
       height:'200px',
+      data:{info},
     });
     //接收mat-dialog-close传值，为true删除
     dialogRef.afterClosed().subscribe(result=>{
       if(result==true){
         //执行删除list对象，（key：列表序号，1：删除1个）
         this.dataSource.data.splice(index,1);
+        this.selection.clear();//取消全选
         this.dataSource._updateChangeSubscription();
       }
     });
@@ -238,18 +236,28 @@ export class HomeComponent implements OnInit,OnDestroy {
   }
   //保存
   save(){
-    let dialogRef=this.dialog.open(ConfirmDialog,{
+    let info = '你确定保存吗？';
+    let dialogRef=this.dialog.open(ConfirmComponent,{
       width:'340px',
       height:'200px',
+      data:{info}
     });
     //接收mat-dialog-close传值，为true删除
     dialogRef.afterClosed().subscribe(result=>{
       if(result==true){
         let isSuccess = this.restApi.save(this.dataSource.data);
         if(isSuccess){
-          alert('保存成功！');
+          info='保存成功！';
+          this.dialog.open(AlertComponent,{
+            width:'340px',
+            data:{info}
+          });
         }else{
-          alert('保存失败！');
+          info='保存失败！';
+          this.dialog.open(AlertComponent,{
+            width:'340px',
+            data:{info}
+          });
         }
       }
     });
@@ -277,18 +285,24 @@ export class HomeComponent implements OnInit,OnDestroy {
         }
       });
     }else{
-      alert('没有选择！');
+      let info='没有选择！';
+      this.dialog.open(AlertComponent,{
+        width:'340px',
+        data:{info}
+      });
     }
   }
   /**
    * 删除
    */
   del(){
+    let info = '你确定删除吗？';
     if(this.selection.selected.length>0){
       //调用删除方法
-      let dialogRef=this.dialog.open(DelconfirmComponent,{
+      let dialogRef=this.dialog.open(ConfirmComponent,{
         width:'340px',
         height:'200px',
+        data:{info}
       });
       //接收mat-dialog-close传值，为true删除
       dialogRef.afterClosed().subscribe(result=>{
@@ -302,14 +316,26 @@ export class HomeComponent implements OnInit,OnDestroy {
             });
             this.selection.clear();
             this.dataSource._updateChangeSubscription();
-            alert('删除成功!');
+            info='删除成功！';
+            this.dialog.open(AlertComponent,{
+              width:'340px',
+              data:{info}
+            });
           }else{
-            alert('删除失败!');
+            info='删除失败！';
+            this.dialog.open(AlertComponent,{
+              width:'340px',
+              data:{info}
+            });
           }
         }
       });
     }else{
-      alert('没有选择！');
+      info='没有选择！';
+      this.dialog.open(AlertComponent,{
+        width:'340px',
+        data:{info}
+      });
     }
   }
 }
@@ -317,7 +343,7 @@ export class HomeComponent implements OnInit,OnDestroy {
  * 弹出框组件
  */
 @Component({
-  selector: 'app-dialog',
+  selector: 'home-dialog',
   templateUrl: './dialog.component.html',
 })
 export class DialogComponent implements OnInit {
@@ -383,4 +409,24 @@ export class DialogComponent implements OnInit {
     //modelList.filter(res=>res.indexOf(val)===0)
     //返回String[]，返回val在res中首次出现的位置,首次出现的位置为0则返回。
   }
+}
+@Component({
+  selector:'home-confirm',
+  templateUrl:'../dialog/confirm.component.html',
+})
+export class ConfirmComponent{
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data:any,
+  ){}
+  info = this.data.info;
+}
+@Component({
+  selector:'home-alert',
+  templateUrl:'../dialog/alert.component.html',
+})
+export class AlertComponent{
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data:any,
+  ){}
+  info = this.data.info;
 }

@@ -3,7 +3,6 @@ import { RestApiService } from './services/rest-api.service'
 import { Subscription } from 'rxjs/Subscription';
 import { MatDialog,MAT_DIALOG_DATA,MatDialogRef } from '@angular/material';
 import { Template } from './interfaces/template';
-import { ConfirmDialog } from './components/dialog/confirmdialog.component';
 import { Cookie } from "ng2-cookies";
 import { Router } from '@angular/router';
 
