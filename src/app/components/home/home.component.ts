@@ -11,6 +11,7 @@ import { Observable } from 'rxjs/Observable';
 import {startWith} from 'rxjs/operators/startWith';
 import {map} from 'rxjs/operators/map';
 import { SelectionModel } from '@angular/cdk/collections';
+import { element } from 'protractor';
 
 @Component({
   selector: 'app-home',
@@ -34,7 +35,7 @@ export class HomeComponent implements OnInit,OnDestroy {
   ngOnDestroy(){ }
   ngOnInit() {
     this.boxValue='CL201709060000';
-    this.getStaticList();
+    // this.getStaticList();
   }
   /**
    * 获取单个数据
@@ -119,7 +120,7 @@ export class HomeComponent implements OnInit,OnDestroy {
     let dialogRef=this.dialog.open(DialogComponent,{
       minWidth:'660px',
       data:{item},
-      // disableClose:true,
+      disableClose:true,
     });
 
     dialogRef.afterClosed().subscribe(result=>{
@@ -229,9 +230,6 @@ export class HomeComponent implements OnInit,OnDestroy {
   }
   //退出
   logout(){
-    // this.router.navigateByUrl("/");
-    // Cookie.deleteAll();
-    // window.location.reload();
     this.restApi.doLoginOut();
   }
   //保存
@@ -245,19 +243,45 @@ export class HomeComponent implements OnInit,OnDestroy {
     //接收mat-dialog-close传值，为true删除
     dialogRef.afterClosed().subscribe(result=>{
       if(result==true){
-        let isSuccess = this.restApi.save(this.dataSource.data);
-        if(isSuccess){
-          info='保存成功！';
-          this.dialog.open(AlertComponent,{
-            width:'340px',
-            data:{info}
+        console.log('长度：'+this.dataSource.data.length);//5-1=4，循环5次
+        for(let i=0;i<(this.dataSource.data.length);i++){
+          let flage=this.restApi.save(this.dataSource.data[i]).then(res=>{
+            // debugger;
+            //循环到最后一次成功则成功，失败一次则失败
+            if(i===(this.dataSource.data.length-1)){
+              info='保存成功！';
+              this.dialog.open(AlertComponent,{
+                width:'340px',
+                data:{info}
+              });
+            }
+            console.log('保存成功！');
+            this.dataSource.data[i].status='old';//改变状态为old
+            console.log(this.dataSource.data[i]);
+          }).catch(err=>{
+            // debugger;
+            if(err.status){
+              info='保存失败！';
+              this.dialog.open(AlertComponent,{
+                width:'340px',
+                data:{info}
+              });
+              console.log('保存失败！');
+            }else{
+              if(i===(this.dataSource.data.length-1)){
+                info='保存成功！';
+                this.dialog.open(AlertComponent,{
+                  width:'340px',
+                  data:{info}
+                });
+                this.dataSource.data[i].status='old';//改变状态为old
+              }
+            }
           });
-        }else{
-          info='保存失败！';
-          this.dialog.open(AlertComponent,{
-            width:'340px',
-            data:{info}
-          });
+          // debugger;
+          // if(!flage){
+          //   break;
+          // }
         }
       }
     });
@@ -269,19 +293,32 @@ export class HomeComponent implements OnInit,OnDestroy {
     if(this.selection.selected.length>0){
       //默认编辑第一个对象，替换所有对象
       let item=this.selection.selected[0];
+      //设置修改过的才替换
       let dialogRef=this.dialog.open(DialogComponent,{
         minWidth:'660px',
         data:{item},
+        disableClose:true,
       });
       dialogRef.afterClosed().subscribe(result=>{
         //防止result为空
         if(result){
-          this.selection.selected.forEach(ele=>{
-            ele.batch=result.batch;//批次
-            ele.model=result.model;//型号
-            ele.deliver_date=result.deliver_date;//发货日期
-            ele.batch_comment=result.batch_comment;//备注
-          });
+          let objMerge='';
+          if(result.batch!=item.batch){
+            objMerge='batch';
+            this.mergeMoreExecute(objMerge,result);
+          }
+          if(result.model!=item.model){
+            objMerge='model';
+            this.mergeMoreExecute(objMerge,result);
+          }
+          if(result.deliver_date!=item.deliver_date){
+            objMerge='deliver_date';
+            this.mergeMoreExecute(objMerge,result);
+          }
+          if(result.batch_comment!=item.batch_comment){
+            objMerge='batch_comment';
+            this.mergeMoreExecute(objMerge,result);
+          }
         }
       });
     }else{
@@ -291,6 +328,38 @@ export class HomeComponent implements OnInit,OnDestroy {
         data:{info}
       });
     }
+  }
+  /**
+   * 根据修改对象，只批量改变修改前后不相同的值
+   * @param objMerge 修改过的值
+   * @param result 修改结果集
+   */
+  mergeMoreExecute(objMerge,result){
+    switch(objMerge){
+      case 'batch':
+        this.selection.selected.forEach(ele=>{
+          ele.batch=result.batch;
+        });
+        break;
+      case 'model':
+        this.selection.selected.forEach(ele=>{
+          ele.model=result.model;
+        });
+        break;
+      case 'deliver_date':
+        this.selection.selected.forEach(ele=>{
+          ele.deliver_date=result.deliver_date;
+        });
+        break;
+      case 'batch_comment':
+        this.selection.selected.forEach(ele=>{
+          ele.batch_comment=result.batch_comment;
+        });
+        break;
+      default:
+        console.log('批量修改出错');
+    }
+    
   }
   /**
    * 删除
@@ -307,27 +376,38 @@ export class HomeComponent implements OnInit,OnDestroy {
       //接收mat-dialog-close传值，为true删除
       dialogRef.afterClosed().subscribe(result=>{
         if(result==true){
-          let flage=this.restApi.del(this.selection.selected);
-          if(flage){
-            //移出所有选中的
-            this.selection.selected.forEach(element => {
-              //console.log('删除位置:'+this.dataSource.data.indexOf(element));
-              this.dataSource.data.splice(this.dataSource.data.indexOf(element),1);
+          // let flage=this.restApi.del(this.selection.selected);
+          this.selection.selected.forEach(element => {
+            if(element.status!='new'){
+              //循环删除服务器数据
+                this.restApi.del(element).then(res=>{
+                  //移出删除成功的
+                  this.dataSource.data.splice(this.dataSource.data.indexOf(element),1);
+                  this.dataSource._updateChangeSubscription();
+                  this.selection.clear();
+                  console.log('删除成功！');
+                }).catch(err=>{
+                  if(err.status===404){
+                    this.dataSource.data.splice(this.dataSource.data.indexOf(element),1);
+                    this.dataSource._updateChangeSubscription();
+                    this.selection.clear();
+                    console.log('404，未找到删除资源');
+                  }else{
+                    console.log('删除失败');
+                    return;
+                  }
+                });
+              }else{
+                this.dataSource.data.splice(this.dataSource.data.indexOf(element),1);
+                this.dataSource._updateChangeSubscription();
+                this.selection.clear();
+              }
             });
-            this.selection.clear();
-            this.dataSource._updateChangeSubscription();
-            info='删除成功！';
-            this.dialog.open(AlertComponent,{
-              width:'340px',
-              data:{info}
-            });
-          }else{
-            info='删除失败！';
-            this.dialog.open(AlertComponent,{
-              width:'340px',
-              data:{info}
-            });
-          }
+            // info='删除失败！';
+            // this.dialog.open(AlertComponent,{
+            //   width:'340px',
+            //   data:{info}
+            // });
         }
       });
     }else{

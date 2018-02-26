@@ -13,12 +13,12 @@ export class CanAuthGuard implements CanActivate{
     constructor(private restApiService:RestApiService,private router:Router,private restApi:RestApiService){}
     canActivate(router:ActivatedRouteSnapshot,state:RouterStateSnapshot):boolean{
         let url:string=state.url;
-        console.log('stateUrl:'+state.url+'访问权限验证：'+this.checkLogin(url));
+        // console.log('stateUrl:'+state.url+'访问权限验证：'+this.checkLogin(url));
         return this.checkLogin(url);
     }
     checkLogin(url){
         let token = this.restApi.getQueryString('access_token');
-        console.log('访问验证的前url'+window.document.referrer);
+        //console.log('访问验证的前url'+window.document.referrer);
         if(this.restApiService.isLoggedIn){return true;}
         //else{Cookie.deleteAll();}
         //this.restApiService.redirect_uri=url;

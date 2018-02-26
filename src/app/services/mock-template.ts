@@ -8,7 +8,7 @@ export const TemplateData:Template[]=[
         production_date:'',
         deliver_date:'',
         relevancy_party:'AAA公司',
-        batch_comment:'滚动式的防守的风格撒旦法',
+        batch_comment:'服务器没有数据',
         status:'old'
     },{
         serial_number:'CL-201809030001',
@@ -17,25 +17,7 @@ export const TemplateData:Template[]=[
         production_date:'',
         deliver_date:'',
         relevancy_party:'BBB公司',
-        batch_comment:'上的公司的广告',
-        status:'old'
-    },{
-        serial_number:'201509030001',
-        batch:'A1-1',
-        model:'EC2-D603',
-        production_date:'',
-        deliver_date:'',
-        relevancy_party:'CCC公司',
-        batch_comment:'加工方法的',
-        status:'old'
-    },{
-        serial_number:'EC2-201809030002',
-        batch:'A1-1',
-        model:'EC2-D604',
-        production_date:'',
-        deliver_date:'',
-        relevancy_party:'DDD公司',
-        batch_comment:'符合肌肤光滑',
+        batch_comment:'服务器没有数据',
         status:'old'
     }
 ];

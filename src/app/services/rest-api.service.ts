@@ -16,6 +16,7 @@ export class RestApiService {
   private client_id:string='woHuxyCSfd8EnfUW6Ioi06Y1RT0oVFDvx6xE6x8L';
   redirect_uri:string='http://localhost:9800/granted/';
   isLoggedIn = false;
+  delSuccess=[];
 
   constructor(
     private http:Http,
@@ -120,47 +121,34 @@ export class RestApiService {
     return Promise.resolve(TemplateData);
     //return TemplateData;
   }
-  async save(data:Template[]):Promise<boolean>{
+  async save(data:Template):Promise<void>{
     let isSuccess=[];
+    
     const header=this.getHeaders(true);
     let id='';
     //逐条保存
-    data.forEach(element => {
-      id=element.serial_number;
+      id=data.serial_number;
       let url='http://api-dev.renjinggai.com:10080/product/factory_information/';
       //判断是否属于新增
-      if(element.status==='new'){
-        console.log('post成功把所有状态改为old');
-        this.http.post(url,JSON.stringify(element),{headers:header})
+      if(data.status==='new'){
+        console.log('post');
+        return this.http.post(url,JSON.stringify(data),{headers:header})
         .toPromise()
         .then(()=>{
-          element.status='old';
-          console.log('post成功返回信息为：'+element);
+          console.log('post成功返回信息为：'+data);
         }).catch(err=>{
-          isSuccess.push(0);
-          console.log('错误了：'+Promise.reject(err));
+          return this.handleError(err);
         });
       }else{
         console.log('put');
         url='http://api-dev.renjinggai.com:10080/product/factory_information/'+ id +'/';
-        this.http.put(url,JSON.stringify(element),{headers:header})
+        return this.http.put(url,JSON.stringify(data),{headers:header})
         .toPromise()
-        .then(()=>element)
+        .then(()=>data)
         .catch(err=>{
-          debugger;
-          isSuccess.push(0);
-          console.log('错误了：'+Promise.reject(err));
+          return this.handleError(err);
         });
       }
-    });
-    console.log('是否保存成功：'+isSuccess.length);
-    if(isSuccess.length>0){
-      console.log('保存失败');
-      return false;
-    }else{
-      console.log('保存成功');
-      return true;
-    }
   }
   private handleError(error:any):Promise<any>{
     console.log('an error occurred：',error);
@@ -169,31 +157,15 @@ export class RestApiService {
   /**
    * 删除
    */
-  del(data:Template[]):boolean{
-    let isSuccess=[];
+  del(data:Template):Promise<void>{
     let url='';
     const header=this.getHeaders(true);
-    data.forEach(element => {
-      //为new的不用删除
-      let status=element.status==='new' ? true : false;
-      if(!status){
-        url='http://api-dev.renjinggai.com:10080/product/factory_information/'+ element.serial_number +'/';
-        this.http.delete(url,{headers:header})
-        .toPromise()
-        .then()
-        .catch(err=>{
-          isSuccess.push('0');
-          console.log(Promise.reject(err));
-        });
-      }
+    url='http://api-dev.renjinggai.com:10080/product/factory_information/'+ data.serial_number +'/';
+    return this.http.delete(url,{headers:header})
+    .toPromise()
+    .then(()=>null).catch(err=>{
+      return this.handleError(err);
     });
-    if(isSuccess.length>0){
-      console.log('删除失败');
-      return false;
-    }else{
-      console.log('删除成功');
-      return true;
-    }
   }
   /**
    * 正则获取参数
@@ -206,7 +178,7 @@ export class RestApiService {
   }
   //日期转string
   toYYYYMMDD(date) {
-    console.log('日期的类型：'+typeof(date)+'+date:'+date);
+    //console.log('日期的类型：'+typeof(date)+'+date:'+date);
     if(date==='')return '';
     var d = typeof(date)=='string'?new Date(date):new Date(date.getTime());
     var dd = d.getDate() < 10 ? "0" + d.getDate() : d.getDate().toString();
