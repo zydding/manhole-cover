@@ -82,7 +82,8 @@ export class RestApiService {
       console.log('登录了');
       //console.log('Cookie:'+Cookie.get('authorization'));
       this.isLoggedIn = true;
-      this.router.navigate(['granted',]);
+      // this.router.navigate(['granted',]);
+      this.router.navigate(['test',]);
     }).catch(err=>{
       console.log(err);
       //失败跳转登录页面
@@ -178,8 +179,8 @@ export class RestApiService {
   }
   //日期转string
   toYYYYMMDD(date) {
-    //console.log('日期的类型：'+typeof(date)+'+date:'+date);
-    if(date==='')return '';
+    console.log('日期的类型：'+typeof(date)+'+date:'+date);
+    if(date==='' || typeof(date)==='undefined')return '';
     var d = typeof(date)=='string'?new Date(date):new Date(date.getTime());
     var dd = d.getDate() < 10 ? "0" + d.getDate() : d.getDate().toString();
     var mm = (d.getMonth()+1)< 10 ? "0" + (d.getMonth() + 1) : (d.getMonth() + 1).toString();

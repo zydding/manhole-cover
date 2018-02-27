@@ -27,6 +27,7 @@ import { AppRoutingModule } from './app.routing';
 import { PageNotFoundComponent } from './NotFound.component';
 import { RouterModule } from '@angular/router';
 import { CanAuthGuard } from './auth-guard.service';
+import { TestComponent , TestDialogComponent,TestConfirmComponent,TestAlertComponent} from './components/test/test.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,10 @@ import { CanAuthGuard } from './auth-guard.service';
     AlertComponent,
     HomeComponent,
     PageNotFoundComponent,
+    TestComponent,
+    TestDialogComponent,
+    TestConfirmComponent,
+    TestAlertComponent,
   ],
   imports: [
     BrowserModule,
@@ -62,9 +67,14 @@ import { CanAuthGuard } from './auth-guard.service';
     DialogComponent,
     ConfirmComponent,
     AlertComponent,
+    TestDialogComponent,
+    TestConfirmComponent,
+    TestAlertComponent,
     CanAuthGuard,
   ],
-  entryComponents:[DialogComponent,ConfirmComponent,AlertComponent,],
+  entryComponents:[DialogComponent,ConfirmComponent,AlertComponent,TestDialogComponent,
+    TestConfirmComponent,
+    TestAlertComponent,],
   
   bootstrap: [AppComponent]
 })

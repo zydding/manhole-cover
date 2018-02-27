@@ -1,25 +1,22 @@
-import { Component, OnInit,Inject } from '@angular/core';
-import { RestApiService } from '../../services/rest-api.service';
+import { Component, OnInit ,Inject } from '@angular/core';
+import { MatTableDataSource, MatDialog, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { Template } from '../../interfaces/template';
-import { MatDialog,MAT_DIALOG_DATA,MatDialogRef, MatTableDataSource } from '@angular/material';
-import { Router } from '@angular/router';
-import { Cookie } from 'ng2-cookies';
-import { forEach } from '@angular/router/src/utils/collection';
-import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
-import { FormControl, Validators, NgForm } from '@angular/forms';
-import { Observable } from 'rxjs/Observable';
-import {startWith} from 'rxjs/operators/startWith';
-import {map} from 'rxjs/operators/map';
 import { SelectionModel } from '@angular/cdk/collections';
-import { element } from 'protractor';
+import { RestApiService } from '../../services/rest-api.service';
+import { Router } from '@angular/router';
+import { FormControl, Validators, FormGroup, FormBuilder } from '@angular/forms';
+import { Observable } from 'rxjs/Observable';
 import { myErrorStateMatcher } from '../../services/myErrorStateMatcher';
+import { startWith } from 'rxjs/operators/startWith';
+import { map } from 'rxjs/operators/map';
+
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css'],
+  selector: 'app-test',
+  templateUrl: '../home/home.component.html',
+  styleUrls: ['../home/home.component.css']
 })
-export class HomeComponent implements OnInit,OnDestroy {
+export class TestComponent implements OnInit {
 
   displayedColumns=['select','serial_number','batch','model','production_date','deliver_date','relevancy_party','batch_comment','handle'];
   dataSource=new MatTableDataSource<Template>([]);
@@ -118,7 +115,7 @@ export class HomeComponent implements OnInit,OnDestroy {
    * @param index 数据下标
    */
   merge(item,index):void{
-    let dialogRef=this.dialog.open(DialogComponent,{
+    let dialogRef=this.dialog.open(TestDialogComponent,{
       minWidth:'660px',
       data:{item},
       disableClose:true,
@@ -139,7 +136,7 @@ export class HomeComponent implements OnInit,OnDestroy {
    */
   remove(index):void{
     let info = '你确定移出吗？';
-    let dialogRef=this.dialog.open(ConfirmComponent,{
+    let dialogRef=this.dialog.open(TestConfirmComponent,{
       width:'340px',
       height:'200px',
       data:{info},
@@ -228,7 +225,7 @@ export class HomeComponent implements OnInit,OnDestroy {
   //保存
   save(){
     let info = '你确定保存吗？';
-    let dialogRef=this.dialog.open(ConfirmComponent,{
+    let dialogRef=this.dialog.open(TestConfirmComponent,{
       width:'340px',
       height:'200px',
       data:{info}
@@ -243,7 +240,7 @@ export class HomeComponent implements OnInit,OnDestroy {
             //循环到最后一次成功则成功，失败一次则失败
             if(i===(this.dataSource.data.length-1)){
               info='保存成功！';
-              this.dialog.open(AlertComponent,{
+              this.dialog.open(TestAlertComponent,{
                 width:'340px',
                 data:{info}
               });
@@ -255,7 +252,7 @@ export class HomeComponent implements OnInit,OnDestroy {
             // debugger;
             if(err.status){
               info='保存失败！';
-              this.dialog.open(AlertComponent,{
+              this.dialog.open(TestAlertComponent,{
                 width:'340px',
                 data:{info}
               });
@@ -263,7 +260,7 @@ export class HomeComponent implements OnInit,OnDestroy {
             }else{
               if(i===(this.dataSource.data.length-1)){
                 info='保存成功！';
-                this.dialog.open(AlertComponent,{
+                this.dialog.open(TestAlertComponent,{
                   width:'340px',
                   data:{info}
                 });
@@ -287,7 +284,7 @@ export class HomeComponent implements OnInit,OnDestroy {
       //默认编辑第一个对象，替换所有对象
       let item=this.selection.selected[0];
       //设置修改过的才替换
-      let dialogRef=this.dialog.open(DialogComponent,{
+      let dialogRef=this.dialog.open(TestDialogComponent,{
         minWidth:'660px',
         data:{item},
         disableClose:true,
@@ -320,7 +317,7 @@ export class HomeComponent implements OnInit,OnDestroy {
       });
     }else{
       let info='没有选择！';
-      this.dialog.open(AlertComponent,{
+      this.dialog.open(TestAlertComponent,{
         width:'340px',
         data:{info}
       });
@@ -370,7 +367,7 @@ export class HomeComponent implements OnInit,OnDestroy {
     let info = '你确定删除吗？';
     if(this.selection.selected.length>0){
       //调用删除方法
-      let dialogRef=this.dialog.open(ConfirmComponent,{
+      let dialogRef=this.dialog.open(TestConfirmComponent,{
         width:'340px',
         height:'200px',
         data:{info}
@@ -414,7 +411,7 @@ export class HomeComponent implements OnInit,OnDestroy {
       });
     }else{
       info='没有选择！';
-      this.dialog.open(AlertComponent,{
+      this.dialog.open(TestAlertComponent,{
         width:'340px',
         data:{info}
       });
@@ -425,24 +422,16 @@ export class HomeComponent implements OnInit,OnDestroy {
  * 弹出框组件
  */
 @Component({
-  selector: 'home-dialog',
+  selector: 'test-dialog',
   templateUrl: './dialog.component.html',
   styleUrls:['./dialog.component.css']
 })
-export class DialogComponent implements OnInit {
+export class TestDialogComponent implements OnInit {
+
+  formGroupControl:FormGroup;
   //数据
   itemData=this.data.item;
   
-  //批次
-  selectBatch=this.itemData.batch;
-  nullFormControl:FormControl=new FormControl('',[
-    Validators.required
-  ]);
-  //型号
-  selectedModel:string=this.itemData.model;
-  modelControl: FormControl = new FormControl('',[
-    Validators.required,
-  ]);
   ModelList=[
     'DT20180201',
     'DT20180202',
@@ -450,24 +439,35 @@ export class DialogComponent implements OnInit {
   ];
   filteredOptions: Observable<string[]>;
 
-  //生产日期
-  production_date= this.dealProductionDate(this.itemData);
-  //发货日期
-  deliver_date=this.itemData.deliver_date;
-  //关联厂家
-  relevancy_party=this.itemData.relevancy_party;
-  //备注
-  batch_comment=this.itemData.batch_comment;
-  commentFormControl:FormControl=new FormControl('',[
-    Validators.required
-  ]);
-  matcher=new myErrorStateMatcher();
   constructor(
+    private formBulider:FormBuilder,
     private dialog:MatDialog,
     @Inject(MAT_DIALOG_DATA) public data:any,
-    public dialogRef :MatDialogRef<DialogComponent>,
+    public dialogRef :MatDialogRef<TestDialogComponent>,
     public restApi:RestApiService,
-  ){}
+  ){
+    this.createForm();
+  }
+  createForm(){
+    this.formGroupControl=this.formBulider.group({
+      batch:new FormControl({value:''},Validators.required),
+      model:new FormControl({value:''},Validators.required),
+      production_date:new FormControl({value:'',},Validators.required),
+      deliver_date:new FormControl({value:'',disabled:true},Validators.required),
+      relevancy_party:new FormControl({value:'',}),
+      batch_comment:new FormControl({value:''},Validators.required),
+    });
+    console.log(this.itemData);
+    this.formGroupControl.patchValue({
+      batch:this.itemData.batch,
+      model:this.itemData.model,
+      production_date:this.dealProductionDate(this.itemData),
+      deliver_date:this.itemData.deliver_date,
+      relevancy_party:this.itemData.relevancy_party,
+      batch_comment:this.itemData.batch_comment,
+    });
+    console.log(this.formGroupControl);
+  }
   //处理生产日期字符串
   dealProductionDate(item){
     var patter=/\d{12}/g;
@@ -476,55 +476,75 @@ export class DialogComponent implements OnInit {
       return arr1[0].substring(0,4)+'-'+arr1[0].substring(4,6)+'-'+arr1[0].substring(6,8);//0-7的日期字符串
     }
   }
-  //关闭对话框,返回修改后的数据
-  onNoClick():void{
+  prepareSave():Template{
+    const value=this.formGroupControl.value;
+    console.log(value);
+    const save:Template={
+      serial_number:this.itemData.serial_number,
+      batch:value.batch,
+      model:value.model,
+      production_date:this.restApi.toYYYYMMDD(value.production_date),
+      deliver_date:this.restApi.toYYYYMMDD(value.deliver_date),
+      relevancy_party:value.relevancy_party,
+      batch_comment:value.batch_comment,
+      status:this.itemData.status,
+    }
+    return save;
+  }
+  onNoClick(){
     //其中有空值
-    if(this.matcher.isErrorState(this.nullFormControl,null) || this.matcher.isErrorState(this.modelControl,null) || this.matcher.isErrorState(this.commentFormControl,null)){
+    if(this.formGroupControl.invalid){
       let info='有*号的输入框不能为空！';
-      this.dialog.open(AlertComponent,{
+      this.dialog.open(TestAlertComponent,{
         width:'340px',
         data:{info}
       });
     }else{
-      let result:Template={
-        serial_number:this.itemData.serial_number,
-        batch:this.selectBatch,
-        model:this.selectedModel,
-        production_date:this.restApi.toYYYYMMDD(this.production_date),
-        deliver_date:this.restApi.toYYYYMMDD(this.deliver_date),
-        relevancy_party:this.relevancy_party,
-        batch_comment:this.batch_comment,
-        status:this.itemData.status,
-      };
-      this.dialogRef.close(result);
+      this.dialogRef.close(this.prepareSave());
     }
   }
+  // //关闭对话框,返回修改后的数据
+  // onNoClick():void{
+  //   //其中有空值
+  //   if(1){
+  //     let info='有*号的输入框不能为空！';
+  //     this.dialog.open(TestAlertComponent,{
+  //       width:'340px',
+  //       data:{info}
+  //     });
+  //   }else{
+  //     let result:Template={
+  //       serial_number:this.itemData.serial_number,
+  //       batch:this.itemData.batch,
+  //       model:this.itemData.model,
+  //       production_date:this.restApi.toYYYYMMDD(this.itemData.production_date),
+  //       deliver_date:this.restApi.toYYYYMMDD(this.itemData.deliver_date),
+  //       relevancy_party:this.itemData.relevancy_party,
+  //       batch_comment:this.itemData.batch_comment,
+  //       status:this.itemData.status,
+  //     };
+  //     this.dialogRef.close(result);
+  //   }
+  // }
 
   ngOnInit() {
-    this.filteredOptions=this.modelControl.valueChanges
+    this.filteredOptions=this.formGroupControl.get('model').valueChanges
     .pipe(
       startWith(''),
       map(val=>this.filter(val)),
     );
-    //pipe()和then()效果相同，then()方法返回一个新的承诺，可以通过函数过滤延迟的状态和值，取代现在不推荐使用的deferred.pipe()方法
-    //source1.subscribe是订阅，即数据更新时的响应方法。同时返回订阅实例Subscription
-    // forEach和subscribe相似，同是实现订阅效果，等到promise可以监控subscription完成和失败的异常。
-    //startWith，source = source1.startWith(value), 表示在source1的最前面注入第一次发射数据
-    //map，source = source1.map(func)表示source1每次发射数据时经过func函数处理，返回新的值作为source发射的数据
   }
   //过滤
   filter(val:string):string[]{
     return this.ModelList.filter(res=>
     res.toLowerCase().indexOf(val.toLowerCase())===0);
-    //modelList.filter(res=>res.indexOf(val)===0)
-    //返回String[]，返回val在res中首次出现的位置,首次出现的位置为0则返回。
   }
 }
 @Component({
   selector:'home-confirm',
   templateUrl:'../dialog/confirm.component.html',
 })
-export class ConfirmComponent{
+export class TestConfirmComponent{
   constructor(
     @Inject(MAT_DIALOG_DATA) public data:any,
   ){}
@@ -536,7 +556,7 @@ export class ConfirmComponent{
   selector:'home-alert',
   templateUrl:'../dialog/alert.component.html',
 })
-export class AlertComponent{
+export class TestAlertComponent{
   constructor(
     @Inject(MAT_DIALOG_DATA) public data:any,
   ){}
