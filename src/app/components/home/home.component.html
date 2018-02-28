@@ -45,11 +45,11 @@
         <!-- serial_number-column -->
         <ng-container matColumnDef="serial_number">
             <mat-header-cell *matHeaderCellDef>序列号</mat-header-cell>
-            <mat-cell *matCellDef="let element">{{element.serial_number}}</mat-cell>
+            <mat-cell *matCellDef="let element" [style.color]="(element.status=='change' || element.status=='new') ? 'red': ''">{{element.serial_number}}</mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="batch">
-            <mat-header-cell *matHeaderCellDef>批次</mat-header-cell>
+            <mat-header-cell *matHeaderCellDef >批次</mat-header-cell>
             <mat-cell *matCellDef="let element">{{element.batch}}</mat-cell>
         </ng-container>
         <ng-container matColumnDef="model">

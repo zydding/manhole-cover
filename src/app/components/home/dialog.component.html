@@ -1,9 +1,9 @@
 <div class="dia">
     <div class="dia-head" mat-dialog-title>
-        <i style="background:url('assets/images/icon.jpg') no-repeat -2px -62px;" width="30" height="30"></i>修改井盖信息
+        <i style="background:url('assets/images/icon.jpg') no-repeat -2px -62px;" width="30" height="30"></i>Form修改井盖信息
     </div>
     <div class="dia-body">
-        <table width="100%" style="margin-top:10px;">
+        <table width="100%" style="margin-top:10px;" [formGroup]="formGroupControl" novalidate>
             <tbody>
                 <tr>
                     <th class="tx-r">序列号：</th>
@@ -11,8 +11,8 @@
                     <td class="tx-r">批次：</td>
                     <td class="tx-l">
                         <div class="td-div-border">
-                            <input matInput [(ngModel)]="selectBatch" spellcheck="false" [formControl]="nullFormControl" [errorStateMatcher]="matcher">
-                            <mat-error *ngIf="nullFormControl.hasError('required')">
+                            <input matInput spellcheck="false" formControlName="batch">
+                            <mat-error *ngIf="formGroupControl.status!='VALID'">
                                 &nbsp;&nbsp;*
                             </mat-error>
                         </div>
@@ -22,13 +22,13 @@
                     <td class="tx-r">型号：</td>
                     <td class="tx-l">
                         <div class="td-div-border">
-                            <input type="text" matInput [(ngModel)]="selectedModel" [formControl]="modelControl" [errorStateMatcher]="matcher" [matAutocomplete]="auto" spellcheck="false">
+                            <input type="text" matInput formControlName="model" [matAutocomplete]="auto" spellcheck="false">
                             <mat-autocomplete #auto="matAutocomplete">
                                 <mat-option *ngFor="let model of filteredOptions | async"  [value]="model">
                                     {{model}}
                                 </mat-option>
                             </mat-autocomplete>
-                            <mat-error *ngIf="modelControl.hasError('required')">
+                            <mat-error *ngIf="formGroupControl.status!='VALID'">
                                 &nbsp;&nbsp;*
                             </mat-error>
                         </div>
@@ -36,7 +36,7 @@
                     <td class="tx-r">生产日期：</td>
                     <td class="tx-l">
                         <div class="td-div-border">
-                            <input matInput [(ngModel)]="production_date" [matDatepicker]="picker1" placeholder="请选择日期" disabled>
+                            <input class="disabled" matInput formControlName="production_date" [matDatepicker]="picker1" [readonly]="true" placeholder="请选择日期">
                             <mat-datepicker-toggle matSuffix [for]="picker1">
                                 <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
                             </mat-datepicker-toggle>
@@ -49,7 +49,7 @@
                     <td class="tx-r">发货日期：</td>
                     <td class="tx-l">
                         <div class="td-div-border">
-                            <input matInput [matDatepicker]="picker2" [(ngModel)]="deliver_date" placeholder="请选择日期" disabled>
+                            <input class="disabled" matInput formControlName="deliver_date" [readonly]="true" [matDatepicker]="picker2" placeholder="请选择日期">
                             <mat-datepicker-toggle matSuffix [for]="picker2">
                                 <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
                             </mat-datepicker-toggle>
@@ -59,7 +59,7 @@
                     <td class="tx-r">关联厂家：</td>
                     <td class="tx-l">
                         <div class="td-div-border">
-                            <input matInput [(ngModel)]="relevancy_party" disabled>
+                            <input class="disabled" matInput formControlName="relevancy_party" [readonly]="true">
                         </div>
                     </td>
                 </tr>
@@ -67,10 +67,10 @@
                 <tr>
                     <td rowspan="3" class="tx-r" style="vertical-align:top;">备注：</td>
                     <td rowspan="3" colspan="3">
-                        <textarea matInput name="remake" [(ngModel)]="batch_comment" style="resize:none; width:90%; height:80px; text-align:left;"
-                            spellcheck="false" [formControl]="commentFormControl" [errorStateMatcher]="matcher" placeholder="请输入备注信息">
+                        <textarea matInput name="remake" formControlName="batch_comment" style="resize:none; width:90%; height:80px; text-align:left;"
+                            spellcheck="false" placeholder="请输入备注信息">
                         </textarea>
-                        <mat-error *ngIf="commentFormControl.hasError('required')">
+                        <mat-error *ngIf="formGroupControl.status!='VALID'">
                             &nbsp;&nbsp;*
                         </mat-error>
                     </td>

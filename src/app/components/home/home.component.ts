@@ -6,12 +6,11 @@ import { Router } from '@angular/router';
 import { Cookie } from 'ng2-cookies';
 import { forEach } from '@angular/router/src/utils/collection';
 import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
-import { FormControl, Validators, NgForm } from '@angular/forms';
+import { FormControl, Validators,FormBuilder,FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs/Observable';
 import {startWith} from 'rxjs/operators/startWith';
 import {map} from 'rxjs/operators/map';
 import { SelectionModel } from '@angular/cdk/collections';
-import { element } from 'protractor';
 import { myErrorStateMatcher } from '../../services/myErrorStateMatcher';
 
 @Component({
@@ -36,6 +35,7 @@ export class HomeComponent implements OnInit,OnDestroy {
   ngOnDestroy(){ }
   ngOnInit() {
     this.boxValue='CL201709060000';
+    
     // this.getStaticList();
   }
   /**
@@ -82,7 +82,8 @@ export class HomeComponent implements OnInit,OnDestroy {
               deliver_date:this.restApi.toYYYYMMDD(new Date()),
               relevancy_party:'',
               batch_comment:'',
-              status:'new'
+              status:'new',
+              change:true
             });
             this.dataSource._updateChangeSubscription();
             this.boxValue='';//清空
@@ -128,6 +129,21 @@ export class HomeComponent implements OnInit,OnDestroy {
       //防止result为空
       if(result){
         //替换当前item的数据staticList
+        if(result.batch!=item.batch){
+          result.change=true;
+        }
+        if(result.model!=item.model){
+          result.change=true;
+        }
+        if(result.production_date!=item.production_date){
+          result.change=true;
+        }
+        if(result.deliver_date!=item.deliver_date){
+          result.change=true;
+        }
+        if(result.batch_comment!=item.batch_comment){
+          result.change=true;
+        }
         this.dataSource.data.splice(index,1,result);//删除一个并替换了
         this.dataSource._updateChangeSubscription();
         //this.save();
@@ -139,11 +155,7 @@ export class HomeComponent implements OnInit,OnDestroy {
    */
   remove(index):void{
     let info = '你确定移出吗？';
-    let dialogRef=this.dialog.open(ConfirmComponent,{
-      width:'340px',
-      height:'200px',
-      data:{info},
-    });
+    let dialogRef=this.openConfirm(info);
     //接收mat-dialog-close传值，为true删除
     dialogRef.afterClosed().subscribe(result=>{
       if(result==true){
@@ -227,57 +239,91 @@ export class HomeComponent implements OnInit,OnDestroy {
   }
   //保存
   save(){
-    let info = '你确定保存吗？';
-    let dialogRef=this.dialog.open(ConfirmComponent,{
-      width:'340px',
-      height:'200px',
-      data:{info}
-    });
-    //接收mat-dialog-close传值，为true删除
-    dialogRef.afterClosed().subscribe(result=>{
-      if(result==true){
-        console.log('长度：'+this.dataSource.data.length);//5-1=4，循环5次
-        for(let i=0;i<(this.dataSource.data.length);i++){
-          let flage=this.restApi.save(this.dataSource.data[i]).then(res=>{
-            // debugger;
-            //循环到最后一次成功则成功，失败一次则失败
-            if(i===(this.dataSource.data.length-1)){
-              info='保存成功！';
-              this.dialog.open(AlertComponent,{
-                width:'340px',
-                data:{info}
-              });
-            }
-            console.log('保存成功！');
-            this.dataSource.data[i].status='old';//改变状态为old
-            console.log(this.dataSource.data[i]);
-          }).catch(err=>{
-            // debugger;
-            if(err.status){
-              info='保存失败！';
-              this.dialog.open(AlertComponent,{
-                width:'340px',
-                data:{info}
-              });
-              console.log('保存失败！');
-            }else{
-              if(i===(this.dataSource.data.length-1)){
+    let saveData=this.selection.selected;
+    let info='';
+    if(saveData.length>0){
+      info = '你确定保存吗？';
+      let dialogRef=this.openConfirm(info);
+      //接收mat-dialog-close传值，为true删除
+      dialogRef.afterClosed().subscribe(result=>{
+        if(result==true){
+          console.log('长度：'+this.dataSource.data.length);//5-1=4，循环5次
+          for(let i=0;i<(saveData.length);i++){
+            let flage=this.restApi.save(saveData[i]).then(res=>{
+              // debugger;
+              //循环到最后一次成功则成功，失败一次则失败
+              if(i===(saveData.length-1)){
                 info='保存成功！';
                 this.dialog.open(AlertComponent,{
                   width:'340px',
                   data:{info}
                 });
-                this.dataSource.data[i].status='old';//改变状态为old
               }
-            }
-          });
-          // debugger;
-          // if(!flage){
-          //   break;
-          // }
+              console.log('保存成功！');
+              saveData[i].status='old';//改变状态为old
+              saveData[i].change=false;
+              console.log(saveData[i]);
+            }).catch(err=>{
+              // debugger;
+              //返回err表示保存失败
+              // debugger;
+              if(err.status){
+                console.log();
+                let obj=this.dealError(err._body);
+                // console.log(err._body[0]);
+                info='保存失败！'+obj;
+                this.dialog.open(AlertComponent,{
+                  width:'340px',
+                  data:{info}
+                });
+                console.log('保存失败！');
+                return;
+              }else{
+                if(i===(saveData.length-1)){
+                  info='保存成功！';
+                  this.dialog.open(AlertComponent,{
+                    width:'340px',
+                    data:{info}
+                  });
+                  saveData[i].status='old';//改变状态为old
+                  saveData[i].change=false;
+                }
+              }
+            });
+          }
         }
-      }
+      });
+    }
+    else{
+      info='没有选择！';
+      this.openAlert(info);
+    }
+  }
+  openConfirm(info){
+    return this.dialog.open(ConfirmComponent,{
+      width:'340px',
+      height:'200px',
+      data:{info}
     });
+  }
+  openAlert(info){
+    this.dialog.open(AlertComponent,{
+      width:'340px',
+      data:{info}
+    });
+  }
+  dealError(obj){
+    let res='';
+    if(JSON.parse(obj).batch){
+      res='批次不能为空，';
+    }
+    if(JSON.parse(obj).model){
+      res+='型号不能为空，';
+    }
+    if(JSON.parse(obj).comment){
+      res='备注不能为空';
+    }
+    return res;
   }
   /**
    * 批量修改
@@ -320,10 +366,7 @@ export class HomeComponent implements OnInit,OnDestroy {
       });
     }else{
       let info='没有选择！';
-      this.dialog.open(AlertComponent,{
-        width:'340px',
-        data:{info}
-      });
+      this.openAlert(info);
     }
   }
   /**
@@ -336,25 +379,30 @@ export class HomeComponent implements OnInit,OnDestroy {
       case 'batch':
         this.selection.selected.forEach(ele=>{
           ele.batch=result.batch;
+          ele.change=true;
         });
         break;
       case 'model':
         this.selection.selected.forEach(ele=>{
+          ele.change=true;
           ele.model=result.model;
         });
         break;
       case 'production_date':
         this.selection.selected.forEach(ele=>{
+          ele.change=true;
           ele.production_date=result.production_date;
         });
         break;
       case 'deliver_date':
         this.selection.selected.forEach(ele=>{
+          ele.change=true;
           ele.deliver_date=result.deliver_date;
         });
         break;
       case 'batch_comment':
         this.selection.selected.forEach(ele=>{
+          ele.change=true;
           ele.batch_comment=result.batch_comment;
         });
         break;
@@ -370,11 +418,7 @@ export class HomeComponent implements OnInit,OnDestroy {
     let info = '你确定删除吗？';
     if(this.selection.selected.length>0){
       //调用删除方法
-      let dialogRef=this.dialog.open(ConfirmComponent,{
-        width:'340px',
-        height:'200px',
-        data:{info}
-      });
+      let dialogRef=this.openConfirm(info);
       //接收mat-dialog-close传值，为true删除
       dialogRef.afterClosed().subscribe(result=>{
         if(result==true){
@@ -414,10 +458,7 @@ export class HomeComponent implements OnInit,OnDestroy {
       });
     }else{
       info='没有选择！';
-      this.dialog.open(AlertComponent,{
-        width:'340px',
-        data:{info}
-      });
+      this.openAlert(info);
     }
   }
 }
@@ -430,19 +471,10 @@ export class HomeComponent implements OnInit,OnDestroy {
   styleUrls:['./dialog.component.css']
 })
 export class DialogComponent implements OnInit {
+  formGroupControl:FormGroup;
   //数据
   itemData=this.data.item;
   
-  //批次
-  selectBatch=this.itemData.batch;
-  nullFormControl:FormControl=new FormControl('',[
-    Validators.required
-  ]);
-  //型号
-  selectedModel:string=this.itemData.model;
-  modelControl: FormControl = new FormControl('',[
-    Validators.required,
-  ]);
   ModelList=[
     'DT20180201',
     'DT20180202',
@@ -450,24 +482,33 @@ export class DialogComponent implements OnInit {
   ];
   filteredOptions: Observable<string[]>;
 
-  //生产日期
-  production_date= this.dealProductionDate(this.itemData);
-  //发货日期
-  deliver_date=this.itemData.deliver_date;
-  //关联厂家
-  relevancy_party=this.itemData.relevancy_party;
-  //备注
-  batch_comment=this.itemData.batch_comment;
-  commentFormControl:FormControl=new FormControl('',[
-    Validators.required
-  ]);
-  matcher=new myErrorStateMatcher();
   constructor(
+    private formBulider:FormBuilder,
     private dialog:MatDialog,
     @Inject(MAT_DIALOG_DATA) public data:any,
     public dialogRef :MatDialogRef<DialogComponent>,
     public restApi:RestApiService,
-  ){}
+  ){
+    this.createForm();
+  }
+  createForm(){
+    this.formGroupControl=this.formBulider.group({
+      batch:new FormControl({value:''},Validators.required),
+      model:new FormControl({value:''},Validators.required),
+      production_date:new FormControl({value:'',},Validators.required),
+      deliver_date:new FormControl({value:''},Validators.required),
+      relevancy_party:new FormControl({value:'',}),
+      batch_comment:new FormControl({value:''},Validators.required),
+    });
+    this.formGroupControl.patchValue({
+      batch:this.itemData.batch,
+      model:this.itemData.model,
+      production_date:this.dealProductionDate(this.itemData),
+      deliver_date:this.itemData.deliver_date,
+      relevancy_party:this.itemData.relevancy_party,
+      batch_comment:this.itemData.batch_comment,
+    });
+  }
   //处理生产日期字符串
   dealProductionDate(item){
     var patter=/\d{12}/g;
@@ -476,48 +517,45 @@ export class DialogComponent implements OnInit {
       return arr1[0].substring(0,4)+'-'+arr1[0].substring(4,6)+'-'+arr1[0].substring(6,8);//0-7的日期字符串
     }
   }
-  //关闭对话框,返回修改后的数据
-  onNoClick():void{
+  prepareSave():Template{
+    const value=this.formGroupControl.value;
+    const save:Template={
+      serial_number:this.itemData.serial_number,
+      batch:value.batch,
+      model:value.model,
+      production_date:this.restApi.toYYYYMMDD(value.production_date),
+      deliver_date:this.restApi.toYYYYMMDD(value.deliver_date),
+      relevancy_party:value.relevancy_party,
+      batch_comment:value.batch_comment,
+      status:this.itemData.status,
+      change:false,
+    }
+    return save;
+  }
+  onNoClick(){
     //其中有空值
-    if(this.matcher.isErrorState(this.nullFormControl,null) || this.matcher.isErrorState(this.modelControl,null) || this.matcher.isErrorState(this.commentFormControl,null)){
+    if(this.formGroupControl.invalid){
       let info='有*号的输入框不能为空！';
       this.dialog.open(AlertComponent,{
         width:'340px',
         data:{info}
       });
     }else{
-      let result:Template={
-        serial_number:this.itemData.serial_number,
-        batch:this.selectBatch,
-        model:this.selectedModel,
-        production_date:this.restApi.toYYYYMMDD(this.production_date),
-        deliver_date:this.restApi.toYYYYMMDD(this.deliver_date),
-        relevancy_party:this.relevancy_party,
-        batch_comment:this.batch_comment,
-        status:this.itemData.status,
-      };
-      this.dialogRef.close(result);
+      this.dialogRef.close(this.prepareSave());
     }
   }
 
   ngOnInit() {
-    this.filteredOptions=this.modelControl.valueChanges
+    this.filteredOptions=this.formGroupControl.get('model').valueChanges
     .pipe(
       startWith(''),
       map(val=>this.filter(val)),
     );
-    //pipe()和then()效果相同，then()方法返回一个新的承诺，可以通过函数过滤延迟的状态和值，取代现在不推荐使用的deferred.pipe()方法
-    //source1.subscribe是订阅，即数据更新时的响应方法。同时返回订阅实例Subscription
-    // forEach和subscribe相似，同是实现订阅效果，等到promise可以监控subscription完成和失败的异常。
-    //startWith，source = source1.startWith(value), 表示在source1的最前面注入第一次发射数据
-    //map，source = source1.map(func)表示source1每次发射数据时经过func函数处理，返回新的值作为source发射的数据
   }
   //过滤
   filter(val:string):string[]{
     return this.ModelList.filter(res=>
     res.toLowerCase().indexOf(val.toLowerCase())===0);
-    //modelList.filter(res=>res.indexOf(val)===0)
-    //返回String[]，返回val在res中首次出现的位置,首次出现的位置为0则返回。
   }
 }
 @Component({

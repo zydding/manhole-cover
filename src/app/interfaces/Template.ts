@@ -7,4 +7,5 @@ export interface Template {
     relevancy_party:string,//关联厂家
     batch_comment:string,//备注
     status:string,
+    change:boolean,
 }

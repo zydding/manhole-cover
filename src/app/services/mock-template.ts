@@ -9,7 +9,8 @@ export const TemplateData:Template[]=[
         deliver_date:'',
         relevancy_party:'AAA公司',
         batch_comment:'服务器没有数据',
-        status:'old'
+        status:'old',
+        change:false,
     },{
         serial_number:'CL-201809030001',
         batch:'A1-1',
@@ -18,6 +19,7 @@ export const TemplateData:Template[]=[
         deliver_date:'',
         relevancy_party:'BBB公司',
         batch_comment:'服务器没有数据',
-        status:'old'
+        status:'old',
+        change:false,
     }
 ];

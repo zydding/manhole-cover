@@ -25,7 +25,7 @@ export class AppComponent implements OnInit {
   ngOnInit():void{
     let token = this.restApi.getQueryString('access_token');
     Cookie.set('authorization',token);
-    console.log('登陆前的 token为：'+token);
+    //console.log('登陆前的 token为：'+token);
     //console.log('Cookie:'+Cookie.get('authorization'));
     this.restApi.doCheckLogin();
   }

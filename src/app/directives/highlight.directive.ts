@@ -5,27 +5,12 @@ import { Directive, ElementRef, HostListener, Input } from '@angular/core';
 })
 export class HighlightDirective {
   boxValue='';
-  @HostListener('load') onload(){
-
-  }
   @HostListener('keypress',['$event']) private onKeyPress($event:Event):void{
-    var code = "";
-    var lastTime,nextTime;
-    var lastCode,nextCode;
-    //debugger;
-    nextCode = $event['keyCode'];
-    var value=$event['key'];
-
-      nextTime = new Date().getTime();
-      if(lastCode != null && lastTime != null && nextTime - lastTime <= 30) {
-          code += String.fromCharCode(lastCode);
-          this.boxValue=code;
-          console.log(this.boxValue);
-      } else if(lastCode != null && lastTime != null && nextTime - lastTime > 100){
-          code = "";
-      }
-      lastCode = nextCode;
-      lastTime = nextTime;
+    let code = $event['keyCode'];
+    console.log(code);
+    if(code===118){
+      alert(1);
+    }
   }
   // private highlight (color : string){
   //   this.el.nativeElement.style.backgroundColor=color;

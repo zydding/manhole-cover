@@ -82,8 +82,8 @@ export class RestApiService {
       console.log('登录了');
       //console.log('Cookie:'+Cookie.get('authorization'));
       this.isLoggedIn = true;
-      // this.router.navigate(['granted',]);
-      this.router.navigate(['test',]);
+      this.router.navigate(['granted',]);
+      // this.router.navigate(['test',]);
     }).catch(err=>{
       console.log(err);
       //失败跳转登录页面
@@ -122,9 +122,7 @@ export class RestApiService {
     return Promise.resolve(TemplateData);
     //return TemplateData;
   }
-  async save(data:Template):Promise<void>{
-    let isSuccess=[];
-    
+  save(data:Template):Promise<void>{
     const header=this.getHeaders(true);
     let id='';
     //逐条保存
