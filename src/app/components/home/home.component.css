@@ -163,11 +163,11 @@
 
 .mat-column-select {
 	overflow: visible;
-	max-width: 5%;
+	max-width: 6%;
 }
 .mat-column-serial_number,
 .mat-column-relevancy_party{
-	max-width: 12%;
+	max-width: 13%;
 }
 
 .mat-column-production_date,
@@ -176,7 +176,7 @@
 }
 .mat-column-batch,
 .mat-column-model{
-	max-width: 8%;
+	max-width: 9%;
 }
 .mat-column-handle{
 	max-width: 8%;
