@@ -18,6 +18,7 @@ const entryPoints = ["inline", "polyfills", "sw-register", "styles", "vendor", "
 const minimizeCss = false;
 const baseHref = "";
 const deployUrl = "";
+const webpack = require('webpack');
 const postcssPlugins = function() {
     // safe settings based on: https://github.com/ben-eb/cssnano/issues/358#issuecomment-283696193
     const importantCommentRe = /@preserve|@license|[@#]\s*source(?:Mapping)?URL|^!/i;
@@ -85,7 +86,7 @@ module.exports = {
         ]
     },
     "output": {
-        "path": path.join(process.cwd(), "dist"),
+        "path": path.join(process.cwd(), "./dist"),
         "filename": "[name].bundle.js",
         "chunkFilename": "[id].chunk.js"
     },
@@ -343,6 +344,7 @@ module.exports = {
         ]
     },
     "plugins": [
+        new webpack.BannerPlugin('版权所有，翻版必究'),
         new NoEmitOnErrorsPlugin(),
         new GlobCopyWebpackPlugin({
             "patterns": [
@@ -453,7 +455,6 @@ module.exports = {
         historyApiFallback: {
             index: '/'
         },
-        port:9800,
         //historyApiFallback 当我们搭建spa应用时非常有用，它使用的是HTML5 History Api，任意的跳转或404响应可以指向 index.html 页面
         //hot Module ReplaceMent 热模块替换，用于页面无刷新加载
     }

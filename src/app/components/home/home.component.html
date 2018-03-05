@@ -13,7 +13,7 @@
       <div class="top-l l">
           <strong class="l">输入序列号：</strong>
           <div class="top-r-border border l">
-            <input [(ngModel)]="boxValue" #box (keyup)="Saoma(box.value,$enent)" style=" resize: none;" class="" id="origin" autofocus="autofocus" spellcheck="false">
+            <input [(ngModel)]="boxValue" #box (keyup)="Saoma(box.value)" style=" resize: none;" class="" id="origin" autofocus="autofocus" spellcheck="false">
           </div>
       </div>
       
@@ -45,7 +45,7 @@
         <!-- serial_number-column -->
         <ng-container matColumnDef="serial_number">
             <mat-header-cell *matHeaderCellDef>序列号</mat-header-cell>
-            <mat-cell *matCellDef="let element" [style.color]="(element.status=='change' || element.status=='new') ? 'red': ''">{{element.serial_number}}</mat-cell>
+            <mat-cell *matCellDef="let element" [style.color]="(element.change) ? 'red': ''">{{element.serial_number}}</mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="batch">
@@ -84,3 +84,4 @@
       </mat-table>
   </div>
 </div>
+<!-- <router-outlet></router-outlet> -->

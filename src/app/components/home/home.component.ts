@@ -140,23 +140,23 @@ export class HomeComponent implements OnInit,OnDestroy {
       if(result){
         //替换当前item的数据staticList
         if(result.batch!=item.batch){
-          result.change=true;
+          this.dataSource.data[index].change=true;
           this.dataSource.data[index].batch=result.batch;
         }
         if(result.model!=item.model){
-          result.change=true;
+          this.dataSource.data[index].change=true;
           this.dataSource.data[index].model=result.model;
         }
         if(result.production_date!=item.production_date){
-          result.change=true;
+          this.dataSource.data[index].change=true;
           this.dataSource.data[index].production_date=result.production_date;
         }
         if(result.deliver_date!=item.deliver_date){
-          result.change=true;
+          this.dataSource.data[index].change=true;
           this.dataSource.data[index].deliver_date=result.deliver_date;
         }
         if(result.batch_comment!=item.batch_comment){
-          result.change=true;
+          this.dataSource.data[index].change=true;
           this.dataSource.data[index].batch_comment=result.batch_comment;
         }
         this.dataSource._updateChangeSubscription();
@@ -196,7 +196,7 @@ export class HomeComponent implements OnInit,OnDestroy {
     this.isAllSelected()?this.selection.clear():this.dataSource.data.forEach(row=>this.selection.select(row));
   }
 
-  async Saoma(boxValue,$enent){
+  async Saoma(boxValue){
     //判断，只有在字符串匹配时才去取取数据
     //取得最后的字符串
     let arrayList=boxValue.split('/');
