@@ -9,8 +9,7 @@ import { OrgTemplate } from '../interfaces/orgTemplate';
 
 @Injectable()
 export class RestApiService {
-  static login='/login';//这里加了api，需要在webpack上面替换为空
-  static api='/api';
+  static api='/api';//这里加了api，需要在webpack上面替换为空
   private response_type:string='token';
   private client_id:string='woHuxyCSfd8EnfUW6Ioi06Y1RT0oVFDvx6xE6x8L';
   redirect_uri:string='http://localhost:9800/granted/';
@@ -144,6 +143,10 @@ export class RestApiService {
         });
       }
   }
+  /**
+   * 返回错误信息
+   * @param error 
+   */
   private handleError(error:any):Promise<any>{
     console.log('an error occurred：',error);
     return Promise.reject(error.message||error);
@@ -162,7 +165,7 @@ export class RestApiService {
     });
   }
   /**
-   * 删除
+   * 删除关联
    */
   delProd(data:Template):Promise<void>{
     const header=this.getHeaders(true);

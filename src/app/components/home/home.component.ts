@@ -11,7 +11,6 @@ import { Observable } from 'rxjs/Observable';
 import {startWith} from 'rxjs/operators/startWith';
 import {map} from 'rxjs/operators/map';
 import { SelectionModel } from '@angular/cdk/collections';
-import { myErrorStateMatcher } from '../../services/myErrorStateMatcher';
 
 @Component({
   selector: 'app-home',
@@ -195,8 +194,7 @@ export class HomeComponent implements OnInit,OnDestroy {
     //console.log('输入了：'+boxValue);
     await this.dirtyList.push(boxValue);
     boxValue=this.dirtyList.pop();//取最后一项
-    //console.log('这是list：'+this.dirtyList.toString()+'即将添加'+boxValue);
-    //需要先处理字符串
+    //处理字符串
     let arrayA=this.dealArray(boxValue);
     if(arrayA.length>0){
       let value=arrayA[0].value;//取第一个匹配
@@ -215,7 +213,7 @@ export class HomeComponent implements OnInit,OnDestroy {
   }
   /** 
    * 处理BoxValue的格式
-   * 期望：判断是否满足三种字符串格式，是返回true，否false
+   * 返回：判断是否满足三种字符串格式，返回数组
   */
   dealArray(boxValue):any[]{
     var flag=false;
@@ -256,7 +254,6 @@ export class HomeComponent implements OnInit,OnDestroy {
       if(saveData.length>0){
         //判断空值
         const flag=this.checkNull(saveData);
-        
         info = '你确定保存吗？';
         let dialogRef=this.openConfirm(info);
         //接收mat-dialog-close传值，为true删除
@@ -265,7 +262,6 @@ export class HomeComponent implements OnInit,OnDestroy {
             console.log('长度：'+this.dataSource.data.length);//5-1=4，循环5次
             for(let i=0;i<(saveData.length);i++){
               let flage=this.restApi.save(saveData[i]).then(res=>{
-                // debugger;
                 //循环到最后一次成功则成功，失败一次则失败
                 if(i===(saveData.length-1)){
                   info='保存成功！';
@@ -278,9 +274,7 @@ export class HomeComponent implements OnInit,OnDestroy {
                 saveData[i].status='old';//改变状态为old
                 saveData[i].change=false;
               }).catch(err=>{
-                // debugger;
                 //返回err表示保存失败
-                // debugger;
                 if(err.status){
                   console.log();
                   let obj=this.dealError(err._body);
@@ -305,7 +299,6 @@ export class HomeComponent implements OnInit,OnDestroy {
             }
           }
         });
-        
       }else{
         let info='没有修改过的数据！';
         this.openAlert(info);
@@ -338,6 +331,9 @@ export class HomeComponent implements OnInit,OnDestroy {
     });
     return flag;
   }
+  /**
+   * 返回选中并修改过的数据
+   */
   dealSaveData(){
     let selectData=this.selection.selected;
     let dirtyData:Template[]=[];
@@ -362,6 +358,10 @@ export class HomeComponent implements OnInit,OnDestroy {
       data:{info}
     });
   }
+  /**
+   * 处理错误信息
+   * @param obj 服务器返回的信息
+   */
   dealError(obj){
     let res='';
     if(JSON.parse(obj).batch){
@@ -513,12 +513,11 @@ export class HomeComponent implements OnInit,OnDestroy {
       //接收mat-dialog-close传值，为true删除
       dialogRef.afterClosed().subscribe(result=>{
         if(result==true){
-          //循环删除服务器数据
+          //循环
           this.selection.selected.forEach(element => {
             //判断不是新增的数据
             if(element.status!='new'){
               this.restApi.delProd(element).then(res=>{
-                debugger;
                 this.dataSource.data[this.dataSource.data.indexOf(element)].relevancy_party="";
                 this.dataSource.data[this.dataSource.data.indexOf(element)].org_id="";
                 this.dataSource._updateChangeSubscription();
@@ -573,8 +572,11 @@ export class DialogComponent implements OnInit {
     public dialogRef :MatDialogRef<DialogComponent>,
     public restApi:RestApiService,
   ){
-    this.createForm();
+    this.createForm();//创建form组
   }
+  /**
+   * 创建form组，并赋值
+   */
   createForm(){
     this.formGroupControl=this.formBulider.group({
       batch:new FormControl({value:''},Validators.required),
@@ -601,6 +603,10 @@ export class DialogComponent implements OnInit {
       return arr1[0].substring(0,4)+'-'+arr1[0].substring(4,6)+'-'+arr1[0].substring(6,8);//0-7的日期字符串
     }
   }
+  /**
+   * 准备保存的数据
+   * 返回处理后的数据Template对象
+   */
   prepareSave():Template{
     const value=this.formGroupControl.value;
     const save:Template={
@@ -618,6 +624,9 @@ export class DialogComponent implements OnInit {
     }
     return save;
   }
+  /**
+   * 点击确定事件
+   */
   onNoClick(){
     //其中有空值
     // if(this.formGroupControl.invalid){
@@ -633,13 +642,14 @@ export class DialogComponent implements OnInit {
   }
 
   ngOnInit() {
+    //监听输入框改变事件，过滤值
     this.filteredOptions=this.formGroupControl.get('model').valueChanges
     .pipe(
       startWith(''),
       map(val=>this.filter(val)),
     );
   }
-  //过滤
+  //过滤方法
   filter(val:string):string[]{
     return this.ModelList.filter(res=>
     res.toLowerCase().indexOf(val.toLowerCase())===0);
