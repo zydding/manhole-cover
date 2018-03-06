@@ -5,7 +5,7 @@
   "scripts": {
     "ng": "ng",
     "start": "webpack-dev-server --port=9800",
-    "build": "ng build",
+    "build": "set NODE_ENV=production&& webpack --config ./webpack.config.js --progress",
     "test": "karma start ./karma.conf.js",
     "lint": "ng lint",
     "e2e": "protractor ./protractor.conf.js",
