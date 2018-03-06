@@ -3,7 +3,6 @@ import { Http,Headers } from "@angular/http";
 import { Subject } from 'rxjs/Subject';
 import { Cookie } from "ng2-cookies";
 import { Template } from '../interfaces/template';
-import { TemplateData } from "./mock-template";
 import { Router } from '@angular/router';
 import { OrgTemplate } from '../interfaces/orgTemplate';
 
@@ -11,7 +10,7 @@ import { OrgTemplate } from '../interfaces/orgTemplate';
 @Injectable()
 export class RestApiService {
   static login='/login';//这里加了api，需要在webpack上面替换为空
-  static getUrl='/getUrl';
+  static api='/api';
   private response_type:string='token';
   private client_id:string='woHuxyCSfd8EnfUW6Ioi06Y1RT0oVFDvx6xE6x8L';
   redirect_uri:string='http://localhost:9800/granted/';
@@ -74,7 +73,7 @@ export class RestApiService {
    */
   async doCheckLogin(){
     const url='http://api-dev.renjinggai.com:10080/product/factory_information/';
-    //const url=RestApiService.getUrl+'/factory_information/';
+    //const url=RestApiService.api+'/factory_information/';
     const header=this.getHeaders(true);
     await this.http.get(url,{headers:header}).toPromise()
     .then(response=>{
@@ -118,10 +117,6 @@ export class RestApiService {
       return Promise.reject(err);
     });
   }
-  getStaticList():Promise<Template[]>{
-    return Promise.resolve(TemplateData);
-    //return TemplateData;
-  }
   save(data:Template):Promise<void>{
     const header=this.getHeaders(true);
     let id='';
@@ -160,6 +155,19 @@ export class RestApiService {
     let url='';
     const header=this.getHeaders(true);
     url='http://api-dev.renjinggai.com:10080/product/factory_information/'+ data.serial_number +'/';
+    return this.http.delete(url,{headers:header})
+    .toPromise()
+    .then(()=>null).catch(err=>{
+      return this.handleError(err);
+    });
+  }
+  /**
+   * 删除
+   */
+  delProd(data:Template):Promise<void>{
+    const header=this.getHeaders(true);
+    //https://api.renjinggai.com/orgs/2/motion_sensors/219/
+    const url=RestApiService.api+data.org_id+'/';///api219
     return this.http.delete(url,{headers:header})
     .toPromise()
     .then(()=>null).catch(err=>{

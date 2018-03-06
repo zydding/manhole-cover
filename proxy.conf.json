@@ -1,0 +1,9 @@
+{
+  "/api": {
+     "target": "http://api.renjinggai.com/orgs/2/motion_sensors/",
+     "secure": false,
+     "changeOrigin": true,
+     "logLevel": "info",
+     "pathRewrite": {"^/api" : ""}
+  }
+}

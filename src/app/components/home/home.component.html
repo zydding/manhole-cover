@@ -21,7 +21,8 @@
         <!-- <button mat-button class="btn back-c2" (click)="getItem(box.value)" id="btn_list">添加</button> -->
           <button mat-button class="btn back-c1 btn-margin" (click)="mergeMore()">批量修改</button>
           <button mat-button class="btn back-c2 btn-margin" (click)="save()">保存</button>
-          <button mat-button class="btn back-c3 btn-margin" (click)="del()">删除</button>
+          <button mat-button class="btn back-c3 btn-margin" (click)="delProd()">删除关联商</button>
+          <!-- <button mat-button class="btn back-c3 btn-margin" (click)="del()">删除</button> -->
       </div>
   </div>
   <div class="auto m20 foot">
@@ -42,6 +43,12 @@
                 </mat-checkbox>
             </mat-cell>
         </ng-container>
+
+        <ng-container matColumnDef="number">
+            <mat-header-cell *matHeaderCellDef>序号</mat-header-cell>
+            <mat-cell *matCellDef="let element" [style.color]="(element.change) ? 'red': ''">{{element.number}}</mat-cell>
+        </ng-container>
+
         <!-- serial_number-column -->
         <ng-container matColumnDef="serial_number">
             <mat-header-cell *matHeaderCellDef>序列号</mat-header-cell>

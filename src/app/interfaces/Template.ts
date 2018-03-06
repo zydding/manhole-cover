@@ -1,5 +1,8 @@
+import { OrgTemplate } from "./orgTemplate";
+
 export interface Template {
     serial_number:string,//序列号
+    number:number,
     batch:string,//批次
     model:string,//型号
     production_date:string,//生产日期
@@ -8,4 +11,5 @@ export interface Template {
     batch_comment:string,//备注
     status:string,
     change:boolean,
+    org_id:string,
 }

@@ -161,6 +161,10 @@
 	font-size: 1em;
 }
 
+.mat-column-number{
+	max-width: 5%;
+}
+
 .mat-column-select {
 	overflow: visible;
 	max-width: 6%;

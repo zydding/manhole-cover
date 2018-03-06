@@ -20,7 +20,7 @@ import { myErrorStateMatcher } from '../../services/myErrorStateMatcher';
 })
 export class HomeComponent implements OnInit,OnDestroy {
 
-  displayedColumns=['select','serial_number','batch','model','production_date','deliver_date','relevancy_party','batch_comment','handle'];
+  displayedColumns=['select','number','serial_number','batch','model','production_date','deliver_date','relevancy_party','batch_comment','handle'];
   dataSource=new MatTableDataSource<Template>([]);
   selection=new SelectionModel<Template>(true,[]);
 
@@ -48,44 +48,33 @@ export class HomeComponent implements OnInit,OnDestroy {
     //boxValue=arrayList[arrayList.length-1];
     if(boxValue.length>0){
       this.restApi.getItem(boxValue).then(res=>{
-        const isHas=this.checkIsHas(boxValue);//判断是否重复
-        if(!isHas){
-          if(res){
-            //设备关联信息
-            this.getOrg(boxValue,res);
-          }
-          this.dataSource.data.push(res);
-          this.dataSource._updateChangeSubscription();
-          this.boxValue='';//清空
+        if(res){
+          //设备关联信息
+          this.getOrg(boxValue,res);
         }
-        else{
-          console.log('序列号重复了，请确认！');
-        }
-        //this.boxValue='';
+        res.number=this.dataSource.data.length+1;
+        this.dataSource.data.push(res);
+        this.dataSource._updateChangeSubscription();
+        this.boxValue='';//清空
       }).catch(err=>{
         //console.log('Cookie:'+Cookie.get('authorization'));
         if(err.status===404){
-          const isHas=this.checkIsHas(boxValue);//判断是否重复
-          //没重复
-          if(!isHas){
-            //添加数据
-            this.dataSource.data.push({
-              serial_number:boxValue,
-              batch:'',
-              model:'',
-              production_date:this.dealProductionDate(boxValue),
-              deliver_date:this.restApi.toYYYYMMDD(new Date()),
-              relevancy_party:'',
-              batch_comment:'',
-              status:'new',
-              change:true
-            });
-            this.dataSource._updateChangeSubscription();
-            this.boxValue='';//清空
-          }else{
-            console.log('序列号重复了，请确认！');
-          }
-          //this.boxValue='';
+          //添加数据
+          this.dataSource.data.push({
+            serial_number:boxValue,
+            number:this.dataSource.data.length+1,
+            batch:'',
+            model:'',
+            production_date:this.dealProductionDate(boxValue),
+            deliver_date:this.restApi.toYYYYMMDD(new Date()),
+            relevancy_party:'',
+            batch_comment:'',
+            status:'new',
+            change:true,
+            org_id:""
+          });
+          this.dataSource._updateChangeSubscription();
+          this.boxValue='';//清空
         }else{
           console.log('你的登录过期，请重新登录。');
         }
@@ -105,6 +94,7 @@ export class HomeComponent implements OnInit,OnDestroy {
     this.restApi.getOrg(serial_number).then(res=>{
       //合并设备信息
       obj.relevancy_party=res.org_name;
+      obj.org_id=res.org_id;
     }).catch(err=>{
       console.log('错误信息：没有取到设备关联信息');
     });
@@ -118,10 +108,6 @@ export class HomeComponent implements OnInit,OnDestroy {
       }
     });
     return isHas;
-  }
-  getStaticList(){
-    //return this.restApi.getStaticList();
-    this.restApi.getStaticList().then(data=>{this.dataSource.data=data;});
   }
   /**
    * 修改,打开对话框
@@ -173,6 +159,10 @@ export class HomeComponent implements OnInit,OnDestroy {
     //接收mat-dialog-close传值，为true删除
     dialogRef.afterClosed().subscribe(result=>{
       if(result==true){
+        //更新序号
+        for(let i=index+1;i<this.dataSource.data.length;i++){
+          this.dataSource.data[i].number--;
+        }
         //执行删除list对象，（key：列表序号，1：删除1个）
         this.dataSource.data.splice(index,1);
         this.selection.clear();//取消全选
@@ -210,7 +200,13 @@ export class HomeComponent implements OnInit,OnDestroy {
     let arrayA=this.dealArray(boxValue);
     if(arrayA.length>0){
       let value=arrayA[0].value;//取第一个匹配
-      this.getItem(value);
+      const isHas=this.checkIsHas(value);//判断是否重复
+      //没重复
+      if(!isHas){
+        this.getItem(value);
+      }else{
+        console.log('序列号重复了，请确认！');
+      }
     }else{
       //console.log('没有找到匹配格式');
       //this.boxValue='';//清空
@@ -227,22 +223,20 @@ export class HomeComponent implements OnInit,OnDestroy {
     var patter1=/EC2-\d{12}/g;//匹配EC2
     var patter2=/CL\d{12}/g;//匹配CL
     var patter3=/\d{12}/g;//匹配12数字
+    // var patter4=/MNN\w{8}/g;
     var arrayA=[];
     //返回包含该查找结果的一个数组。 
     var arr1,arr2,arr3;
     if((arr1=patter1.exec(boxValue))!=null){
       flag=true;
-      //console.log('找到了EC2-');
       arrayA.push({value:arr1[0],flag:flag});
     }
     if((arr2=patter2.exec(boxValue))!=null && flag===false){
       flag=true;
-      //console.log('找到了CL');
       arrayA.push({value:arr2[0],flag:flag});
     }
     if((arr3=patter3.exec(boxValue))!=null && flag===false){
       flag=true;
-      //console.log('找到了Num');
       arrayA.push({value:arr3[0],flag:flag});
     }
     return arrayA;
@@ -262,59 +256,56 @@ export class HomeComponent implements OnInit,OnDestroy {
       if(saveData.length>0){
         //判断空值
         const flag=this.checkNull(saveData);
-        if(flag){
-          info = '你确定保存吗？';
-          let dialogRef=this.openConfirm(info);
-          //接收mat-dialog-close传值，为true删除
-          dialogRef.afterClosed().subscribe(result=>{
-            if(result==true){
-              console.log('长度：'+this.dataSource.data.length);//5-1=4，循环5次
-              for(let i=0;i<(saveData.length);i++){
-                let flage=this.restApi.save(saveData[i]).then(res=>{
-                  // debugger;
-                  //循环到最后一次成功则成功，失败一次则失败
+        
+        info = '你确定保存吗？';
+        let dialogRef=this.openConfirm(info);
+        //接收mat-dialog-close传值，为true删除
+        dialogRef.afterClosed().subscribe(result=>{
+          if(result==true){
+            console.log('长度：'+this.dataSource.data.length);//5-1=4，循环5次
+            for(let i=0;i<(saveData.length);i++){
+              let flage=this.restApi.save(saveData[i]).then(res=>{
+                // debugger;
+                //循环到最后一次成功则成功，失败一次则失败
+                if(i===(saveData.length-1)){
+                  info='保存成功！';
+                  // this.dialog.closeAll();//关闭所有
+                  this.openAlert(info);
+                  console.log('保存成功！');
+                }
+                //获取关联厂家
+                this.getOrg(saveData[i].serial_number,saveData[i])
+                saveData[i].status='old';//改变状态为old
+                saveData[i].change=false;
+              }).catch(err=>{
+                // debugger;
+                //返回err表示保存失败
+                // debugger;
+                if(err.status){
+                  console.log();
+                  let obj=this.dealError(err._body);
+                  // console.log(err._body[0]);
+                  info='保存失败！'+obj;
+                  this.dialog.closeAll();//关闭所有
+                  this.openAlert(info);
+                  console.log('保存失败！');
+                  return;
+                }else{
                   if(i===(saveData.length-1)){
                     info='保存成功！';
                     // this.dialog.closeAll();//关闭所有
                     this.openAlert(info);
-                    console.log('保存成功！');
+                    //获取关联厂家
+                    this.getOrg(saveData[i].serial_number,saveData[i])
+                    saveData[i].status='old';//改变状态为old
+                    saveData[i].change=false;
                   }
-                  //获取关联厂家
-                  this.getOrg(saveData[i].serial_number,saveData[i])
-                  saveData[i].status='old';//改变状态为old
-                  saveData[i].change=false;
-                }).catch(err=>{
-                  // debugger;
-                  //返回err表示保存失败
-                  // debugger;
-                  if(err.status){
-                    console.log();
-                    let obj=this.dealError(err._body);
-                    // console.log(err._body[0]);
-                    info='保存失败！'+obj;
-                    this.dialog.closeAll();//关闭所有
-                    this.openAlert(info);
-                    console.log('保存失败！');
-                    return;
-                  }else{
-                    if(i===(saveData.length-1)){
-                      info='保存成功！';
-                      // this.dialog.closeAll();//关闭所有
-                      this.openAlert(info);
-                      //获取关联厂家
-                      this.getOrg(saveData[i].serial_number,saveData[i])
-                      saveData[i].status='old';//改变状态为old
-                      saveData[i].change=false;
-                    }
-                  }
-                });
-              }
+                }
+              });
             }
-          });
-        }else{
-          let info='空值不能保存！';
-          this.openAlert(info);
-        }
+          }
+        });
+        
       }else{
         let info='没有修改过的数据！';
         this.openAlert(info);
@@ -485,29 +476,68 @@ export class HomeComponent implements OnInit,OnDestroy {
           this.selection.selected.forEach(element => {
             if(element.status!='new'){
               //循环删除服务器数据
-                this.restApi.del(element).then(res=>{
-                  //移出删除成功的
-                  this.dataSource.data.splice(this.dataSource.data.indexOf(element),1);
-                  this.dataSource._updateChangeSubscription();
-                  this.selection.clear();
-                  console.log('删除成功！');
-                }).catch(err=>{
-                  if(err.status===404){
-                    this.dataSource.data.splice(this.dataSource.data.indexOf(element),1);
-                    this.dataSource._updateChangeSubscription();
-                    this.selection.clear();
-                    console.log('404，未找到删除资源');
-                  }else{
-                    console.log('删除失败');
-                    return;
-                  }
-                });
-              }else{
+              this.restApi.del(element).then(res=>{
+                //移出删除成功的
                 this.dataSource.data.splice(this.dataSource.data.indexOf(element),1);
                 this.dataSource._updateChangeSubscription();
                 this.selection.clear();
-              }
-            });
+                console.log('删除成功！');
+              }).catch(err=>{
+                if(err.status===404){
+                  this.dataSource.data.splice(this.dataSource.data.indexOf(element),1);
+                  this.dataSource._updateChangeSubscription();
+                  this.selection.clear();
+                  console.log('404，未找到删除资源');
+                }else{
+                  console.log('删除失败');
+                  return;
+                }
+              });
+            }else{
+              this.dataSource.data.splice(this.dataSource.data.indexOf(element),1);
+              this.dataSource._updateChangeSubscription();
+              this.selection.clear();
+            }
+          });
+        }
+      });
+    }else{
+      info='没有选择！';
+      this.openAlert(info);
+    }
+  }
+  delProd(){
+    let info = '你确定删除关联商吗？';
+    if(this.selection.selected.length>0){
+      let dialogRef=this.openConfirm(info);
+      //接收mat-dialog-close传值，为true删除
+      dialogRef.afterClosed().subscribe(result=>{
+        if(result==true){
+          //循环删除服务器数据
+          this.selection.selected.forEach(element => {
+            //判断不是新增的数据
+            if(element.status!='new'){
+              this.restApi.delProd(element).then(res=>{
+                debugger;
+                this.dataSource.data[this.dataSource.data.indexOf(element)].relevancy_party="";
+                this.dataSource.data[this.dataSource.data.indexOf(element)].org_id="";
+                this.dataSource._updateChangeSubscription();
+                //this.selection.clear();
+                console.log('删除成功！');
+              }).catch(err=>{
+                if(err.status===404){
+                  this.dataSource.data[this.dataSource.data.indexOf(element)].relevancy_party="";
+                  this.dataSource.data[this.dataSource.data.indexOf(element)].org_id="";
+                  this.dataSource._updateChangeSubscription();
+                  //this.selection.clear();
+                  console.log('404，未找到删除资源');
+                }else{
+                  console.log('删除失败');
+                  return;
+                }
+              });
+            }
+          });
         }
       });
     }else{
@@ -575,6 +605,7 @@ export class DialogComponent implements OnInit {
     const value=this.formGroupControl.value;
     const save:Template={
       serial_number:this.itemData.serial_number,
+      number:this.itemData.number,
       batch:value.batch,
       model:value.model,
       production_date:this.restApi.toYYYYMMDD(value.production_date),
@@ -583,20 +614,22 @@ export class DialogComponent implements OnInit {
       batch_comment:value.batch_comment,
       status:this.itemData.status,
       change:false,
+      org_id:this.itemData.org_id,
     }
     return save;
   }
   onNoClick(){
     //其中有空值
-    if(this.formGroupControl.invalid){
-      let info='有*号的输入框不能为空！';
-      this.dialog.open(AlertComponent,{
-        width:'340px',
-        data:{info}
-      });
-    }else{
-      this.dialogRef.close(this.prepareSave());
-    }
+    // if(this.formGroupControl.invalid){
+    //   let info='有*号的输入框不能为空！';
+    //   this.dialog.open(AlertComponent,{
+    //     width:'340px',
+    //     data:{info}
+    //   });
+    // }else{
+    //   this.dialogRef.close(this.prepareSave());
+    // }
+    this.dialogRef.close(this.prepareSave());
   }
 
   ngOnInit() {
