@@ -24,7 +24,7 @@ export class HomeComponent implements OnInit,OnDestroy {
   selection=new SelectionModel<Template>(true,[]);
 
   // isCheck=false;
-  dirtyList:Template[]=[];
+  dirtyList:string[]=[];
   boxValue;
   constructor(
     private restApi:RestApiService,
@@ -34,19 +34,18 @@ export class HomeComponent implements OnInit,OnDestroy {
   ngOnDestroy(){ }
   ngOnInit() {
     this.boxValue='CL201709060000';
-    
     // this.getStaticList();
   }
   /**
    * 获取单个数据
-   * 判断不能重复
+   * 
    * @param boxValue 处理后的字符串
    */
-  getItem(boxValue:string){
+  async getItem(boxValue:string){
     //var arrayList=boxValue.split('/');
     //boxValue=arrayList[arrayList.length-1];
     if(boxValue.length>0){
-      this.restApi.getItem(boxValue).then(res=>{
+      await this.restApi.getItem(boxValue).then(res=>{
         if(res){
           //设备关联信息
           this.getOrg(boxValue,res);
@@ -54,6 +53,7 @@ export class HomeComponent implements OnInit,OnDestroy {
         res.number=this.dataSource.data.length+1;
         this.dataSource.data.push(res);
         this.dataSource._updateChangeSubscription();
+        this.dirtyList.splice(0,this.dirtyList.length);//删除全部
         this.boxValue='';//清空
       }).catch(err=>{
         //console.log('Cookie:'+Cookie.get('authorization'));
@@ -73,11 +73,14 @@ export class HomeComponent implements OnInit,OnDestroy {
             org_id:""
           });
           this.dataSource._updateChangeSubscription();
+          this.dirtyList.splice(0,this.dirtyList.length);//删除全部
           this.boxValue='';//清空
+          
         }else{
           console.log('你的登录过期，请重新登录。');
         }
       });
+      
     }
   }
   //处理生产日期字符串
@@ -98,16 +101,7 @@ export class HomeComponent implements OnInit,OnDestroy {
       console.log('错误信息：没有取到设备关联信息');
     });
   }
-  //验证重复
-  checkIsHas(value):boolean{
-    var isHas=false;
-    this.dataSource.data.forEach(element=>{
-      if(element.serial_number==value){
-        isHas=true;return;
-      }
-    });
-    return isHas;
-  }
+  
   /**
    * 修改,打开对话框
    * @param item 数据对象
@@ -155,17 +149,21 @@ export class HomeComponent implements OnInit,OnDestroy {
   remove(index):void{
     let info = '你确定移出吗？';
     let dialogRef=this.openConfirm(info);
+    let data:Template[]=this.dataSource.data;
     //接收mat-dialog-close传值，为true删除
     dialogRef.afterClosed().subscribe(result=>{
       if(result==true){
         //更新序号
-        for(let i=index+1;i<this.dataSource.data.length;i++){
-          this.dataSource.data[i].number--;
+        for(let i=index+1;i<data.length;i++){
+          data[i].number--;
         }
         //执行删除list对象，（key：列表序号，1：删除1个）
-        this.dataSource.data.splice(index,1);
+        data.splice(index,1);
         this.selection.clear();//取消全选
+        this.dataSource.data=data;
+        this.dirtyList.splice(0,this.dirtyList.length);//必须在这里清除
         this.dataSource._updateChangeSubscription();
+        console.log(this.dataSource.data);
       }
     });
   }
@@ -184,32 +182,32 @@ export class HomeComponent implements OnInit,OnDestroy {
   masterToggle(){
     this.isAllSelected()?this.selection.clear():this.dataSource.data.forEach(row=>this.selection.select(row));
   }
+  /**
+   * 匹配序列号
+   * 问题？执行太快会重复的问题，没来得及判断重复
+   * 是因为每次change都会触发事件，而restApi是异步的
+   * 
+   * 用dirtyList来缓存输入的序列号和dataSource中的序列号
+   */
 
   async Saoma(boxValue){
-    //判断，只有在字符串匹配时才去取取数据
-    //取得最后的字符串
-    let arrayList=boxValue.split('/');
-    boxValue=arrayList[arrayList.length-1];
-    //这里是扫码
-    //console.log('输入了：'+boxValue);
-    await this.dirtyList.push(boxValue);
-    boxValue=this.dirtyList.pop();//取最后一项
-    //处理字符串
     let arrayA=this.dealArray(boxValue);
     if(arrayA.length>0){
-      let value=arrayA[0].value;//取第一个匹配
-      const isHas=this.checkIsHas(value);//判断是否重复
-      //没重复
-      if(!isHas){
-        this.getItem(value);
-      }else{
-        console.log('序列号重复了，请确认！');
-      }
+      const valueString=arrayA[0].value;//取第一个匹配
+      let isHas=false;
+      this.dataSource.data.forEach(element => {
+        this.dirtyList.push(element.serial_number);
+      });
+      this.dirtyList.push(valueString);
+      // console.log("dataSource:"+this.dataSource.data.toString());
+      // console.log("dirtyList:"+this.dirtyList.toString());
+      //条件表达式，用来处理序列号重复
+      this.dirtyList.indexOf(valueString) == this.dirtyList.lastIndexOf(valueString) ? this.getItem(valueString) : console.log("序列号重复了:"+this.dirtyList.toString()); return false;
     }else{
-      //console.log('没有找到匹配格式');
+      console.log('没有找到匹配格式');
+      return false;
       //this.boxValue='';//清空
     }
-    this.dirtyList.splice(0,this.dirtyList.length);//删除全部
   }
   /** 
    * 处理BoxValue的格式
@@ -217,14 +215,13 @@ export class HomeComponent implements OnInit,OnDestroy {
   */
   dealArray(boxValue):any[]{
     var flag=false;
-    //console.log('字符总长度：'+boxValue);
     var patter1=/EC2-\d{12}/g;//匹配EC2
     var patter2=/CL\d{12}/g;//匹配CL
     var patter3=/\d{12}/g;//匹配12数字
-    // var patter4=/MNN\w{8}/g;
+    var patter4=/MNN\w{8}/g;
     var arrayA=[];
     //返回包含该查找结果的一个数组。 
-    var arr1,arr2,arr3;
+    var arr1,arr2,arr3,arr4;
     if((arr1=patter1.exec(boxValue))!=null){
       flag=true;
       arrayA.push({value:arr1[0],flag:flag});
@@ -236,6 +233,10 @@ export class HomeComponent implements OnInit,OnDestroy {
     if((arr3=patter3.exec(boxValue))!=null && flag===false){
       flag=true;
       arrayA.push({value:arr3[0],flag:flag});
+    }
+    if((arr4=patter4.exec(boxValue))!=null && flag===false){
+      flag=true;
+      arrayA.push({value:arr4[0],flag:flag});
     }
     return arrayA;
   }

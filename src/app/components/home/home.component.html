@@ -13,7 +13,7 @@
       <div class="top-l l">
           <strong class="l">输入序列号：</strong>
           <div class="top-r-border border l">
-            <input [(ngModel)]="boxValue" #box (keyup)="Saoma(box.value)" style=" resize: none;" class="" id="origin" autofocus="autofocus" spellcheck="false">
+            <input [(ngModel)]="boxValue" (ngModelChange)="Saoma($event)" style=" resize: none;" class="" id="origin" autofocus="autofocus" spellcheck="false">
           </div>
       </div>
       
